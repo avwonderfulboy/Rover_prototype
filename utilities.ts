@@ -30,7 +30,9 @@ export  function stack_creation(app_name,language,extension,app_type,stack_numbe
                     let configs=resources["resources"][j]["config"]
                     if(resources["resources"][j]["type"]=="lambda"){ 
                         exec("cp -r "+pwd+app_name+"/"+"lambda_demo"+"/ "+pwd+app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"/")
+                        if(configs["logic"]==true){
                             file_write(app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"/"+"app"+extension,logics.lambda_logics[language][app_type][resources["resources"][j]["name"]])
+                        } 
                             //console.log(resources["resources"][j]["name"])
                         configs["CodeUri"]=resources["resources"][j]["name"]+"/"
                         configs["Runtime"]=language

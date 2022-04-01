@@ -11,14 +11,14 @@ export let app_type={
                         "type":"lambda",
                         "config":{},
                         "policies":{},
-                        "logic":[]
+                        "logic":false
                     },
                     {
                         "name":"lam2",
                         "type":"lambda",
                         "config":{},
                         "policies":{},
-                        "logic":[]
+                        "logic":false
                     }
                 ],
                 
@@ -30,14 +30,14 @@ export let app_type={
                         "type":"lambda",
                         "config":{},
                         "policies":{},
-                        "logic":[]
+                        "logic":false
                     },
                     {
                         "name":"lam4",
                         "type":"lambda",
                         "config":{},
                         "policies":{},
-                        "logic":[]
+                        "logic":false
                     }
             ],
                
@@ -69,7 +69,7 @@ export let app_type={
                               }
                             ]
                           },
-                        "logic":[]
+                        "logic":true
                     },
                     {
                         "name":"UserTabel",
@@ -89,7 +89,7 @@ export let app_type={
                               }
                             ]
                           },
-                        "logic":[]
+                        "logic":false
                     },
                     {
                         "name":"emailAuthPermission",
@@ -100,7 +100,7 @@ export let app_type={
                             "Principal": "cognito-idp.amazonaws.com",
                             "SourceArn": {"Fn::GetAtt": ["AuthUserPool","Arn"]}
                         },
-                        "logic":[]
+                        "logic":false
                     },
                     {
                         "name":"AuthUserPool",
@@ -133,7 +133,7 @@ export let app_type={
                               "PostConfirmation":  {"Fn::GetAtt": ["PostSignup","Arn"]}
                             }
                           },
-                        "logic":[]
+                        "logic":false
                     },
                     {
                         "name":"AuthUserPoolClient",
@@ -163,7 +163,7 @@ export let app_type={
                               "https://www.google.com"
                             ]
                           },
-                        "logic":[]
+                        "logic":false
                     },
                     {
                         "name":"emailAuthRole",
@@ -177,7 +177,7 @@ export let app_type={
                                 }
                             ]
                         },
-                        "logic":[]
+                        "logic":false
                     },
                     {
                       "name":"loginapi",
@@ -194,7 +194,7 @@ export let app_type={
                           ]
                           
                         },
-                      "logic":[]
+                      "logic":false
                   },
                 ]
             
