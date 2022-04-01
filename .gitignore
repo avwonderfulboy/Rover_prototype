@@ -22,6 +22,8 @@ lib-cov
 coverage
 *.lcov
 
+*.js
+
 # nyc test coverage
 .nyc_output
 
@@ -103,4 +105,4 @@ dist
 # TernJS port file
 .tern-port
 
-.js
+
