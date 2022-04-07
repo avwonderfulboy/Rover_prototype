@@ -12,7 +12,7 @@ let input={
     let language= config.LanguageSupport[input.language]["version"]
     let dependency=config.LanguageSupport[input.language]["dependency"]
     let extension=config.LanguageSupport[input.language]["extension"]
-    exec(config.sam_init_base+config.sam_language+language+config.sam_dependency+dependency+config.sam_app_name+app_name+config.sam_app_template)
+    exec(config.SAMInitBase+config.SAMLanguage+language+config.SAMDependency+dependency+config.SAMAppName+app_name+config.SAMAppTemplate)
     let app_types=modules.AppType[input["AppType"]]
     rover_utilities.stackCreation(app_name,language,extension,input["AppType"],app_types["no_of_stack"],app_types["stack_names"],app_types["stack_resources"])
 }

@@ -3,8 +3,8 @@ import * as utilities from "./utilities"
 const yaml = require("yaml");
 export  function skeleton(){
     let template_skeleton= {}
-    template_skeleton["AWSTemplateFormatVersion"]= configs.skeleton_config["template_version"]
-    template_skeleton["Transform"]= configs.skeleton_config["sam_transform_version"]
+    template_skeleton["AWSTemplateFormatVersion"]= configs.SkeletonConfig["template_version"]
+    template_skeleton["Transform"]= configs.SkeletonConfig["sam_transform_version"]
     template_skeleton["Description"]= "SAM Template"
     template_skeleton["Globals"]= {"Function": {"Timeout": 30}}
     template_skeleton["Resources"]= {}
@@ -13,7 +13,7 @@ export  function skeleton(){
 function roleAddition(template,config){
     let policies=[]
     for (let k in config["Policies"]){
-        let role=configs.policySkeleton
+        let role=configs.PolicySkeleton
         role["PolicyDocument"]["Statement"][0]["Action"]=config["Policies"][k]["Action"]
         role["PolicyDocument"]["Statement"][0]["Resource"]=config["Policies"][k]["Resource"]
         policies.push(role)

@@ -1,20 +1,20 @@
-export let skeleton_config={}
-skeleton_config["template_version"]="2010-09-09"
-skeleton_config["sam_transform_version"]="AWS::Serverless-2016-10-31"
+export let SkeletonConfig={}
+SkeletonConfig["template_version"]="2010-09-09"
+SkeletonConfig["sam_transform_version"]="AWS::Serverless-2016-10-31"
 
-export let sam_init_base="sam init --no-interactive "
-export let sam_language=" -r "
-export let sam_dependency=" -d "
-export let sam_app_name=" -n "
-export let sam_app_template=" --app-template hello-world"
-export let stepfunction_state_types=["Succeed","Fail","Parallel","Map","Pass","Wait","Task","Choice"]
-export let stepfunction_states={
+export let SAMInitBase="sam init --no-interactive "
+export let SAMLanguage=" -r "
+export let SAMDependency=" -d "
+export let SAMAppName=" -n "
+export let SAMAppTemplate=" --app-template hello-world"
+export let StepfunctionStateTypes=["Succeed","Fail","Parallel","Map","Pass","Wait","Task","Choice"]
+export let StepfunctionStates={
       "Type" : "",
       "Resource": "",
       "Next": "",
       "Comment": ""
 }
-export let stepfunction_states_type_skeletons={
+export let StepfunctionStatesTypeSkeletons={
       "Task": {
         "Comment": "Task State example",
         "Type": "Task",
@@ -70,7 +70,7 @@ export let stepfunction_states_type_skeletons={
         "End": true
       }
 }
-export let policySkeleton={
+export let PolicySkeleton={
     "PolicyDocument": {
       "Version": "2012-10-17",
       "Statement": [
@@ -118,7 +118,7 @@ export let CognitoAliasAttributes=[
     "phone_number",
     "preferred_username"
 ]
-export let iamroleSkeleton= {
+export let IAMRoleSkeleton= {
           "ManagedPolicyArns": [
             "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
           ],
@@ -298,10 +298,10 @@ export let AWSResources={
                 "Default":{
                     "AssumeRolePolicyDocument":{
                         "Key":"AssumeRolePolicyDocument",
-                        "Value":iamroleSkeleton["AssumeRolePolicyDocument"]
+                        "Value":IAMRoleSkeleton["AssumeRolePolicyDocument"]
                     },"ManagedPolicyArns":{
                         "Key":"ManagedPolicyArns",
-                        "Value":iamroleSkeleton["ManagedPolicyArns"]
+                        "Value":IAMRoleSkeleton["ManagedPolicyArns"]
                     }
                 }
         }
