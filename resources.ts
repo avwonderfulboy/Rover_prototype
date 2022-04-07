@@ -22,8 +22,8 @@ function roleAddition(template,config){
     return template
 }
 function swaggerGenerator(config){
-    let swagger=configs.swagger_skeleton
-    let pathswagger=configs.swagger_path_skeleton
+    let swagger=configs.SwaggerSkeleton
+    let pathswagger=configs.SwaggerPathSkeleton
     for (let i in config["objects"]){
         let obj_swagger={}
         obj_swagger[config["objects"][i]["path"]]={}
@@ -32,7 +32,7 @@ function swaggerGenerator(config){
             obj_swagger[config["objects"][i]["path"]][config["objects"][i]["methods"][j]]= pathswagger[config["objects"][i]["methods"][j]]
             let uri
             if(config["objects"][i]["resourcetype"]=="lambda"){
-                uri=(configs.apigateway_uri[config["objects"][i]["resourcetype"]]).replace("lambda_arn",config["objects"][i]["resource"]);
+                uri=(configs.APIGatewayURI[config["objects"][i]["resourcetype"]]).replace("lambda_arn",config["objects"][i]["resource"]);
             }
             
             obj_swagger[config["objects"][i]["path"]][config["objects"][i]["methods"][j]]["x-amazon-apigateway-integration"]["uri"]=uri
@@ -41,7 +41,7 @@ function swaggerGenerator(config){
     }
     let doc = new yaml.Document();
     doc.contents = swagger;
-    utilities.file_write(config["filepath"],doc.toString())
+    utilities.writeFile(config["filepath"],doc.toString())
 }
 export function apigatewaypath(template,path){
     let definationbody= {
@@ -56,11 +56,11 @@ export function apigatewaypath(template,path){
       return template
     }
 export let resource_generation=function(resource_name,config){
-    let resource_properties=configs.aws_resources[resource_name]
+    let resource_properties=configs.AWSResources[resource_name]
     let template={}
     for (let j in resource_properties.attributes){
         if (resource_properties.attributes[j]=="Type"){
-            template[resource_properties.attributes[j]]=configs.aws_resources_types[resource_name]
+            template[resource_properties.attributes[j]]=configs.AWSResourcesTypes[resource_name]
         }else{
             template[resource_properties.attributes[j]]={}
             for (let k in resource_properties.Properties.Base){

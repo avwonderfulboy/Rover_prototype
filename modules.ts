@@ -1,5 +1,5 @@
 import * as configs  from "./config.js"
-export let app_type={
+export let AppType={
     "base_app":{
         "no_of_stack":2,
         "stack_names":["stack1","stack2"],
@@ -21,7 +21,6 @@ export let app_type={
                         "logic":false
                     }
                 ],
-                
             },
             "stack2":{
                 "resources":[
@@ -40,9 +39,7 @@ export let app_type={
                         "logic":false
                     }
             ],
-               
             }
-            
         }
     },
     "email_auth_app":{
@@ -71,6 +68,12 @@ export let app_type={
                           },
                         "logic":true
                     },
+                    {
+                      "name":"S3Bucket",
+                      "type":"s3bucket",
+                      "config":{},
+                      "logic":false
+                  },
                     {
                         "name":"UserTabel",
                         "type":"dynamoDB",
@@ -192,10 +195,9 @@ export let app_type={
                             "resourcetype":"lambda"
                           }
                           ]
-                          
                         },
                       "logic":false
-                  },
+                    },
                 ]
             
             }

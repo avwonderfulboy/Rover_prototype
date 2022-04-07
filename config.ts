@@ -13,7 +13,7 @@ export let stepfunction_states={
       "Resource": "",
       "Next": "",
       "Comment": ""
-    }
+}
 export let stepfunction_states_type_skeletons={
       "Task": {
         "Comment": "Task State example",
@@ -70,8 +70,6 @@ export let stepfunction_states_type_skeletons={
         "End": true
       }
 }
-
-
 export let policySkeleton={
     "PolicyDocument": {
       "Version": "2012-10-17",
@@ -91,7 +89,7 @@ export let CognitoAllowedOAuthScopes= [
     "openid",
     "profile",
     "aws.cognito.signin.user.admin"
-  ]
+]
 export let CognitoExplicitAuthFlows=[
     "ALLOW_ADMIN_USER_PASSWORD_AUTH",
     "ALLOW_CUSTOM_AUTH",
@@ -143,7 +141,7 @@ export let iamroleSkeleton= {
           "Path": "/",
           "Policies": []
 }
-export let lan_support={
+export let LanguageSupport={
 "node":{
     "version":"nodejs14.x",
     "dependency":"npm",
@@ -155,7 +153,7 @@ export let lan_support={
     "extension":".py"
 }
 }
-export let aws_resources_types={
+export let AWSResourcesTypes={
     "stack":"AWS::CloudFormation::Stack",
     "lambda":"AWS::Serverless::Function",
     "dynamoDB":"AWS::DynamoDB::Table",
@@ -164,11 +162,12 @@ export let aws_resources_types={
     "userPoolClient":"AWS::Cognito::UserPoolClient",
     "iamrole":"AWS::IAM::Role",
     "apigateway": "AWS::Serverless::Api",
-    "stepfunction":"AWS::Serverless::StateMachine"
+    "stepfunction":"AWS::Serverless::StateMachine",
+    "s3bucket":"AWS::S3::Bucket"
 
   
 }
-export let aws_resources={
+export let AWSResources={
     "stack":{
         "attributes":["Type","Properties"],
         "Properties":{
@@ -359,30 +358,47 @@ export let aws_resources={
                 ],
                 "Default":{}
         }
+    },
+    "s3bucket":{
+        "attributes":["Type","Properties"],
+        "Properties":{
+            "Base":[ "BucketName"],
+            "Optional":[
+                "AccelerateConfiguration", 
+                "AccessControl", 
+                "AnalyticsConfigurations", 
+                "BucketEncryption", 
+                "CorsConfiguration", 
+                "IntelligentTieringConfigurations", 
+                "InventoryConfigurations", 
+                "LifecycleConfiguration", 
+                "LoggingConfiguration" ,
+                "MetricsConfigurations"  ,
+                "NotificationConfiguration" ,
+                "ObjectLockConfiguration" ,
+                "ObjectLockEnabled" ,
+                "OwnershipControls" ,
+                "PublicAccessBlockConfiguration" ,
+                "ReplicationConfiguration", 
+                "Tags" ,
+                "VersioningConfiguration" ,
+                "WebsiteConfiguration",
+                ],
+                "Default":{}
+        }
     }
 
 
 
+
+     
+
 }
-
-"Definition" 
-  "DefinitionSubstitutions" 
-  "DefinitionUri" 
-  "Events" 
-  "Logging" 
-  "Name" 
-  "PermissionsBoundary" 
-  "Policies"  
-  "Role" 
-  "Tags" 
-  "Tracing" 
-  "Type" 
-
-export let apigateway_uri={
+export let APIGatewayURI={
     "lambda":"arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambda_arn.Arn}/invocations",
     "stepfunction":"arn:aws:apigateway:${AWS::Region}:states:action/StartSyncExecution"
 }
-export let swagger_skeleton={
+export let SwaggerSkeleton={
     "openapi": "3.0.1",
     "info": {
         "title": "user-api",
@@ -398,8 +414,7 @@ export let swagger_skeleton={
         }
     }
 }
-
-export let swagger_path_skeleton=  {
+export let SwaggerPathSkeleton=  {
     "get": {
         "responses": {
             "200": {

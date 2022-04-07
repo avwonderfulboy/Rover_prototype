@@ -6,18 +6,17 @@ const yaml = require("yaml");
 var fs = require("fs");
 export let  pwd =process.cwd()+"/"
 let doc = new yaml.Document();
-export  function file_write(path, data){ 
+export  function writeFile(path, data){ 
      fs.writeFileSync(pwd+"/"+path,data);
 }
-export  function add_resource_template(resources, name){ 
+export  function addResourceTemplate(resources, name){ 
     let template=rover_resources.skeleton()
         for(let  i in name){ 
             template["Resources"][name[i]]=resources[name[i]]
         }
         return template   
 }
-export  function stack_creation(app_name,language,extension,app_type,stack_number,stack_names,resource){ 
-    
+export  function stackCreation(app_name,language,extension,AppType,stack_number,stack_names,resource){
     let j= exec("mv "+pwd+app_name+"/hello-world "+pwd+app_name+"/"+"lambda_demo")
         let stackes={}
         for( let i=0;i< stack_number;i++){ 
@@ -31,7 +30,7 @@ export  function stack_creation(app_name,language,extension,app_type,stack_numbe
                     if(resources["resources"][j]["type"]=="lambda"){ 
                         exec("cp -r "+pwd+app_name+"/"+"lambda_demo"+"/ "+pwd+app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"/")
                         if(configs["logic"]==true){
-                            file_write(app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"/"+"app"+extension,logics.lambda_logics[language][app_type][resources["resources"][j]["name"]])
+                            writeFile(app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"/"+"app"+extension,logics.LambdaLogics[language][AppType][resources["resources"][j]["name"]])
                         } 
                             //console.log(resources["resources"][j]["name"])
                         configs["CodeUri"]=resources["resources"][j]["name"]+"/"
@@ -53,20 +52,19 @@ export  function stack_creation(app_name,language,extension,app_type,stack_numbe
                         configs["StageName"]=resources["resources"][j]["name"]
                         configs["path"]=resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
                         configs["filepath"]=app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
+                    }else if(resources["resources"][j]["type"]=="s3bucket"){
+                        configs["BucketName"]=resources["resources"][j]["name"]
                     } 
-
                     let resources1=rover_resources.resource_generation(resources["resources"][j]["type"],configs)
                     res[resources["resources"][j]["name"]] = resources1
                 }
-                
-                let template1= add_resource_template(res,Object.keys(res))
+                let template1= addResourceTemplate(res,Object.keys(res))
                 let doc = new yaml.Document();
                 doc.contents = template1;
-                file_write(app_name+"/"+stack_names[i]+"_Stack"+"/template.yaml",doc.toString())   
+                writeFile(app_name+"/"+stack_names[i]+"_Stack"+"/template.yaml",doc.toString())   
         }
-                let template= add_resource_template(stackes,stack_names)
+                let template= addResourceTemplate(stackes,stack_names)
                 let doc = new yaml.Document();
                 doc.contents = template;
-                file_write(app_name+"/template.yaml",doc.toString())
- 
-    }
+                writeFile(app_name+"/template.yaml",doc.toString())
+}

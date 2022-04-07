@@ -1,4 +1,4 @@
-export let lambda_logics={
+export let LambdaLogics={
     "nodejs14.x":{
         "email_auth_app":{
             
