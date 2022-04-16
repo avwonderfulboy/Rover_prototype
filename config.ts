@@ -388,11 +388,6 @@ export let AWSResources={
         }
     }
 
-
-
-
-     
-
 }
 export let APIGatewayURI={
     "lambda":"arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambda_arn.Arn}/invocations",

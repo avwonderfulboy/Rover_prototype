@@ -1,5 +1,6 @@
 import * as configs  from "./config.js"
 export let AppType={
+  
     "base_app":{
         "no_of_stack":2,
         "stack_names":["stack1","stack2"],
@@ -73,7 +74,7 @@ export let AppType={
                       "type":"s3bucket",
                       "config":{},
                       "logic":false
-                  },
+                    },
                     {
                         "name":"UserTabel",
                         "type":"dynamoDB",
@@ -193,6 +194,13 @@ export let AppType={
                             "resource":"PostSignup",
                             "path":"books/",
                             "resourcetype":"lambda"
+                          },
+                          {
+                            "name":"Authors",
+                            "methods":["get","post","put","delete"],
+                            "resource":"PostSignup",
+                            "path":"authors/",
+                            "resourcetype":"lambda"
                           }
                           ]
                         },
@@ -203,5 +211,5 @@ export let AppType={
             }
         }
     }
-    }
+}
     

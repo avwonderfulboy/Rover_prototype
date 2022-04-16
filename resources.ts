@@ -37,7 +37,7 @@ function swaggerGenerator(config){
             
             obj_swagger[config["objects"][i]["path"]][config["objects"][i]["methods"][j]]["x-amazon-apigateway-integration"]["uri"]=uri
         } 
-        swagger["paths"]=obj_swagger
+        swagger["paths"][config["objects"][i]["path"]]=obj_swagger[config["objects"][i]["path"]]
     }
     let doc = new yaml.Document();
     doc.contents = swagger;
