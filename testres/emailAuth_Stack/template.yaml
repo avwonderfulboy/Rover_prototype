@@ -1,0 +1,258 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template
+Globals:
+  Function:
+    Timeout: 30
+Resources:
+  DefineAuthChallenge:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: DefineAuthChallenge
+      CodeUri: DefineAuthChallenge/
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          userinfoTable:
+            Ref: UserTabel
+      Policies:
+        - AWSLambdaDynamoDBExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName:
+              Ref: UserTabel
+      Handler: app.lambdaHandler
+  CreateAuthChallenge:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CreateAuthChallenge
+      CodeUri: CreateAuthChallenge/
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          SES_FROM_ADDRESS:
+            Ref: VerifyAuthChallengeResponse
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - ses:SendEmail
+              Resource: "*"
+      Handler: app.lambdaHandler
+  VerifyAuthChallengeResponse:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: VerifyAuthChallengeResponse
+      CodeUri: VerifyAuthChallengeResponse/
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          userinfoTable:
+            Ref: UserTabel
+      Policies:
+        - AWSLambdaDynamoDBExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName:
+              Ref: UserTabel
+      Handler: app.lambdaHandler
+  PreSignUp:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: PreSignUp
+      CodeUri: PreSignUp/
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          userinfoTable:
+            Ref: UserTabel
+      Policies:
+        - AWSLambdaDynamoDBExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName:
+              Ref: UserTabel
+      Handler: app.lambdaHandler
+  PostAuthentication:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: PostAuthentication
+      CodeUri: PostAuthentication/
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          userinfoTable:
+            Ref: UserTabel
+      Policies:
+        - AWSLambdaDynamoDBExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName:
+              Ref: UserTabel
+      Handler: app.lambdaHandler
+  UserTabel:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: UserTabel
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+  CreateAuthChallengeInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+          - CreateAuthChallenge
+          - Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn:
+        Fn::GetAtt:
+          - AuthUserPool
+          - Arn
+      Action: lambda:InvokeFunction
+  DefineAuthChallengeInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+          - DefineAuthChallenge
+          - Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn:
+        Fn::GetAtt:
+          - AuthUserPool
+          - Arn
+      Action: lambda:InvokeFunction
+  VerifyAuthChallengeResponseInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+          - VerifyAuthChallengeResponse
+          - Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn:
+        Fn::GetAtt:
+          - AuthUserPool
+          - Arn
+      Action: lambda:InvokeFunction
+  PostAuthenticationInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+          - PostAuthentication
+          - Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn:
+        Fn::GetAtt:
+          - AuthUserPool
+          - Arn
+      Action: lambda:InvokeFunction
+  PreSignUpInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+          - PreSignUp
+          - Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn:
+        Fn::GetAtt:
+          - AuthUserPool
+          - Arn
+      Action: lambda:InvokeFunction
+  AuthUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: AuthUserPool
+      LambdaConfig:
+        CreateAuthChallenge:
+          Fn::GetAtt:
+            - CreateAuthChallenge
+            - Arn
+        DefineAuthChallenge:
+          Fn::GetAtt:
+            - DefineAuthChallenge
+            - Arn
+        PreSignUp:
+          Fn::GetAtt:
+            - PreSignUp
+            - Arn
+        VerifyAuthChallengeResponse:
+          Fn::GetAtt:
+            - VerifyAuthChallengeResponse
+            - Arn
+        PostAuthentication:
+          Fn::GetAtt:
+            - PostAuthentication
+            - Arn
+      MfaConfiguration: OFF
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+      Schema:
+        - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: email
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+      UsernameAttributes:
+        - email
+  AuthUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId:
+        Ref: AuthUserPool
+      ClientName: AuthUserPoolClient
+      ExplicitAuthFlows:
+        - CUSTOM_AUTH_FLOW_ONLY
+      GenerateSecret: false
+  PostAuthenticationRoles:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      RoleName: PostAuthenticationRoles
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies: []
+  AllowSetUserAttributes:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: AllowSetUserAttributes
+      Roles:
+        - Ref: PostAuthenticationRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: cognito-idp:AdminUpdateUserAttributes
+            Resource:
+              Fn::GetAtt:
+                - AuthUserPool
+                - Arn
+  EmailAuthAPIs:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: EmailAuthAPIs
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: EmailAuthAPIs_apigateway/swagger.yaml

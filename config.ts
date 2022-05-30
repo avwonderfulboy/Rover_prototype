@@ -7,7 +7,10 @@ export let SAMLanguage=" -r "
 export let SAMDependency=" -d "
 export let SAMAppName=" -n "
 export let SAMAppTemplate=" --app-template hello-world"
+export let ForceRemove = "rm -rf "
+export let LambdaDemo = "/lambda_demo"
 export let StepfunctionStateTypes=["Succeed","Fail","Parallel","Map","Pass","Wait","Task","Choice"]
+
 export let StepfunctionStates={
       "Type" : "",
       "Resource": "",
@@ -81,8 +84,9 @@ export let PolicySkeleton={
         }
       ]
     },
-    "PolicyName": "LambdaFunctionInvocation"
+   
 }
+
 export let CognitoAllowedOAuthScopes= [
     "phone",
     "email",
@@ -118,9 +122,9 @@ export let CognitoAliasAttributes=[
     "phone_number",
     "preferred_username"
 ]
-export let IAMRoleSkeleton= {
+let  IAMRoleSkeleton= {
           "ManagedPolicyArns": [
-            "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+            "arn:aws:iam::aws:policy/service-role/"
           ],
           "AssumeRolePolicyDocument": {
             "Version": "2012-10-17",
@@ -141,6 +145,15 @@ export let IAMRoleSkeleton= {
           "Path": "/",
           "Policies": []
 }
+export {IAMRoleSkeleton}
+export let APIGatewaySkeleton={
+    "Fn::Transform": {
+      "Name": "AWS::Include",
+      "Parameters": {
+          "Location":""
+      }
+    }
+  }
 export let LanguageSupport={
 "node":{
     "version":"nodejs14.x",
@@ -161,6 +174,7 @@ export let AWSResourcesTypes={
     "lambdaPermission":"AWS::Lambda::Permission",
     "userPoolClient":"AWS::Cognito::UserPoolClient",
     "iamrole":"AWS::IAM::Role",
+    "iampolicy":"AWS::IAM::Policy",
     "apigateway": "AWS::Serverless::Api",
     "stepfunction":"AWS::Serverless::StateMachine",
     "s3bucket":"AWS::S3::Bucket"
@@ -306,6 +320,19 @@ export let AWSResources={
                 }
         }
     },
+    "iampolicy":{
+        "attributes":["Type","Properties"],
+        "Properties":{
+            "Base":["PolicyName"],
+            "Optional":[
+                "Roles" ,
+                "Users",
+                "Groups" 
+                ],
+                "Default":{
+                }
+        }
+    },
     "apigateway":{
         "attributes":["Type","Properties"],
         "Properties":{
@@ -390,8 +417,8 @@ export let AWSResources={
 
 }
 export let APIGatewayURI={
-    "lambda":"arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambda_arn.Arn}/invocations",
-    "stepfunction":"arn:aws:apigateway:${AWS::Region}:states:action/StartSyncExecution"
+    "lambda":"lambda:path/2015-03-31/functions/${lambda.Arn}/invocations",
+    "stepfunction":"states:action/StartSyncExecution"
 }
 export let SwaggerSkeleton={
     "openapi": "3.0.1",
@@ -442,7 +469,7 @@ export let SwaggerPathSkeleton=  {
         },
         "x-amazon-apigateway-integration": {
             "httpMethod": "POST",
-            "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:960351580303:function:get-user/invocations",
+            "uri": "arn:aws:apigateway:${AWS::Region}:",
             "responses": {
                 "default": {
                     "statusCode": "200",
@@ -490,7 +517,7 @@ export let SwaggerPathSkeleton=  {
         },
         "x-amazon-apigateway-integration": {
             "httpMethod": "POST",
-            "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:960351580303:function:create-user/invocations",
+            "uri": "arn:aws:apigateway:${AWS::Region}:",
             "responses": {
                 "default": {
                     "statusCode": "200",
@@ -538,7 +565,7 @@ export let SwaggerPathSkeleton=  {
         },
         "x-amazon-apigateway-integration": {
             "httpMethod": "POST",
-            "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:960351580303:function:get-user/invocations",
+            "uri": "arn:aws:apigateway:${AWS::Region}:",
             "responses": {
                 "default": {
                     "statusCode": "200",
@@ -586,7 +613,7 @@ export let SwaggerPathSkeleton=  {
         },
         "x-amazon-apigateway-integration": {
             "httpMethod": "POST",
-            "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:960351580303:function:create-user/invocations",
+            "uri": "arn:aws:apigateway:${AWS::Region}:",
             "responses": {
                 "default": {
                     "statusCode": "200",

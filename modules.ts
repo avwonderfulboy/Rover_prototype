@@ -1,4 +1,4 @@
-import * as configs  from "./config.js"
+import * as config  from "./config.js"
 export let AppType={
   
     "base_app":{
@@ -43,11 +43,11 @@ export let AppType={
             }
         }
     },
-    "email_auth_app":{
+    "test_app":{
         "no_of_stack":1,
-        "stack_names":["emailAuth"],
+        "stack_names":["test"],
         "stack_resources":{
-            "emailAuth":{
+            "test":{
                 "resources":[
                     {
                         "name":"PostSignup",
@@ -112,10 +112,10 @@ export let AppType={
                         "config":{
                             "UserPoolName": "Auth-User-Pool",
                             "AutoVerifiedAttributes": [
-                                configs.CognitoAutoVerifiedAttributes[0]
+                                config.CognitoAutoVerifiedAttributes[0]
                             ],
                             "AliasAttributes": [
-                                configs.CognitoAliasAttributes[0]
+                                config.CognitoAliasAttributes[0]
                             ],
                             "Policies": {
                               "PasswordPolicy": {
@@ -146,21 +146,21 @@ export let AppType={
                             "UserPoolId": { "Ref" : "AuthUserPool"},
                             "GenerateSecret": false,
                             "SupportedIdentityProviders": [
-                                configs.CognitoSupportedIdentityProviders[0]
+                                config.CognitoSupportedIdentityProviders[0]
                             ],
                             "AllowedOAuthFlows": [
-                                configs.CognitoAllowedOAuthFlows[1]
+                                config.CognitoAllowedOAuthFlows[1]
                             ],
                             "AllowedOAuthScopes": [
-                                configs.CognitoAllowedOAuthScopes[0],
-                                configs.CognitoAllowedOAuthScopes[1],
-                                configs.CognitoAllowedOAuthScopes[2],
-                                configs.CognitoAllowedOAuthScopes[3],
-                                configs.CognitoAllowedOAuthScopes[4]
+                                config.CognitoAllowedOAuthScopes[0],
+                                config.CognitoAllowedOAuthScopes[1],
+                                config.CognitoAllowedOAuthScopes[2],
+                                config.CognitoAllowedOAuthScopes[3],
+                                config.CognitoAllowedOAuthScopes[4]
                             ],
                             "ExplicitAuthFlows": [
-                                configs.CognitoExplicitAuthFlows[2],
-                                configs.CognitoExplicitAuthFlows[4]
+                                config.CognitoExplicitAuthFlows[2],
+                                config.CognitoExplicitAuthFlows[4]
                             ],
                             "AllowedOAuthFlowsUserPoolClient": true,
                             "CallbackURLs": [
@@ -192,14 +192,14 @@ export let AppType={
                             "name":"Books",
                             "methods":["get","post"],
                             "resource":"PostSignup",
-                            "path":"books/",
+                            "path":"/books",
                             "resourcetype":"lambda"
                           },
                           {
                             "name":"Authors",
                             "methods":["get","post","put","delete"],
                             "resource":"PostSignup",
-                            "path":"authors/",
+                            "path":"/authors",
                             "resourcetype":"lambda"
                           }
                           ]
@@ -210,6 +210,323 @@ export let AppType={
             
             }
         }
-    }
+    },
+    "email_auth_app":{
+      "no_of_stack":1,
+      "stack_names":["emailAuth"],
+      "stack_resources":{
+          "emailAuth":{
+              "resources":[
+                  {
+                      "name":"DefineAuthChallenge",
+                      "type":"lambda",
+                      "config":{
+                          "Environment": {
+                              "Variables": {
+                              "userinfoTable": { "Ref" : "UserTabel"}
+                              }
+                          },
+                          "Policies": [
+                            "AWSLambdaDynamoDBExecutionRole",
+                            {
+                              "DynamoDBCrudPolicy": {
+                                "TableName": { "Ref" : "UserTabel"}
+                              }
+                            }
+                          ]
+                        },
+                      "logic":true
+                  },
+                  {
+                    "name":"CreateAuthChallenge",
+                    "type":"lambda",
+                    "config":{
+                      "Environment": {
+                        "Variables": {
+                          "SES_FROM_ADDRESS": {"Ref": "VerifyAuthChallengeResponse"}
+                        }
+                      },
+                      "Policies": [
+                        {
+                          "Version": "2012-10-17",
+                          "Statement": [
+                            {
+                              "Effect": "Allow",
+                              "Action": [
+                                "ses:SendEmail"
+                              ],
+                              "Resource": "*"
+                            }
+                          ]
+                        }
+                      ]
+                      },
+                    "logic":true
+                  },
+                  {
+                    "name":"VerifyAuthChallengeResponse",
+                    "type":"lambda",
+                    "config":{
+                        "Environment": {
+                            "Variables": {
+                            "userinfoTable": { "Ref" : "UserTabel"}
+                            }
+                        },
+                        "Policies": [
+                          "AWSLambdaDynamoDBExecutionRole",
+                          {
+                            "DynamoDBCrudPolicy": {
+                              "TableName": { "Ref" : "UserTabel"}
+                            }
+                          }
+                        ]
+                      },
+                    "logic":true
+                  },
+                  {
+                    "name":"PreSignUp",
+                    "type":"lambda",
+                    "config":{
+                        "Environment": {
+                            "Variables": {
+                            "userinfoTable": { "Ref" : "UserTabel"}
+                            }
+                        },
+                        "Policies": [
+                          "AWSLambdaDynamoDBExecutionRole",
+                          {
+                            "DynamoDBCrudPolicy": {
+                              "TableName": { "Ref" : "UserTabel"}
+                            }
+                          }
+                        ]
+                      },
+                    "logic":true
+                  },
+                  {
+                    "name":"PostAuthentication",
+                    "type":"lambda",
+                    "config":{
+                        "Role":  {"Fn::GetAtt": [ "PostAuthenticationRole","Arn"]},
+                        "Environment": {
+                            "Variables": {
+                            "userinfoTable": { "Ref" : "UserTabel"}
+                            }
+                        },
+                        "Policies": [
+                          "AWSLambdaDynamoDBExecutionRole",
+                          {
+                            "DynamoDBCrudPolicy": {
+                              "TableName": { "Ref" : "UserTabel"}
+                            }
+                          }
+                        ]
+                      },
+                    "logic":true
+                  },
+                  {
+                      "name":"UserTabel",
+                      "type":"dynamoDB",
+                      "config":{
+                          "BillingMode": "PAY_PER_REQUEST",
+                          "AttributeDefinitions": [
+                            {
+                              "AttributeName": "email",
+                              "AttributeType": "S"
+                            }
+                          ],
+                          "KeySchema": [
+                            {
+                              "AttributeName": "email",
+                              "KeyType": "HASH"
+                            }
+                          ]
+                        },
+                      "logic":false
+                  },
+                  {
+                      "name":"CreateAuthChallengeInvocationPermission",
+                      "type":"lambdaPermission",
+                      "config":{
+                         
+                        "Action": "lambda:InvokeFunction",
+                        "FunctionName":  {"Fn::GetAtt": [ "CreateAuthChallenge","Arn"]},
+                        "Principal": "cognito-idp.amazonaws.com",
+                        "SourceArn":  {"Fn::GetAtt": [ "AuthUserPool","Arn"]}
+                      },
+                      "logic":false
+                  },
+                  {
+                    "name":"DefineAuthChallengeInvocationPermission",
+                    "type":"lambdaPermission",
+                    "config":{
+                       
+                      "Action": "lambda:InvokeFunction",
+                      "FunctionName":  {"Fn::GetAtt": [ "DefineAuthChallenge","Arn"]},
+                      "Principal": "cognito-idp.amazonaws.com",
+                      "SourceArn":  {"Fn::GetAtt": [ "AuthUserPool","Arn"]}
+                    },
+                    "logic":false
+                  },
+                  {
+                  "name":"VerifyAuthChallengeResponseInvocationPermission",
+                  "type":"lambdaPermission",
+                  "config":{
+                     
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName":  {"Fn::GetAtt": [ "VerifyAuthChallengeResponse","Arn"]},
+                    "Principal": "cognito-idp.amazonaws.com",
+                    "SourceArn":  {"Fn::GetAtt": [ "AuthUserPool","Arn"]}
+                  },
+                  "logic":false
+                  },
+                  {
+                "name":"PostAuthenticationInvocationPermission",
+                "type":"lambdaPermission",
+                "config":{
+                    "Principal": "cognito-idp.amazonaws.com",
+                    "Action": "lambda:InvokeFunction",
+                    "FunctionName": {"Fn::GetAtt": ["PostAuthentication","Arn"]},
+                    "SourceArn":  {"Fn::GetAtt": [ "AuthUserPool","Arn"]}
+                },
+                "logic":false
+                  },
+                  {
+              "name":"PreSignUpInvocationPermission",
+              "type":"lambdaPermission",
+              "config":{
+                 
+                "Action": "lambda:InvokeFunction",
+                "FunctionName":  {"Fn::GetAtt": [ "PreSignUp","Arn"]},
+                "Principal": "cognito-idp.amazonaws.com",
+                "SourceArn":  {"Fn::GetAtt": [ "AuthUserPool","Arn"]}
+
+                 
+              },
+              "logic":false
+                  },
+                  {
+                      "name":"AuthUserPool",
+                      "type":"cognitoUserPool",
+                      "config":{
+                          UserPoolName: "Auth-User-Pool",
+                          MfaConfiguration: "OFF",
+                          UsernameAttributes: [
+                            "email"
+                          ],
+                          Schema: [
+                            {
+                              "Name": "name",
+                              "AttributeDataType": "String",
+                              "Mutable": true,
+                              "Required": true
+                            },
+                            {
+                              "Name": "email",
+                              "AttributeDataType": "String",
+                              "Mutable": true,
+                              "Required": true
+                            }
+                          ],
+                          Policies: {
+                            "PasswordPolicy": {
+                              "MinimumLength": 8,
+                              "RequireUppercase": true,
+                              "RequireLowercase": true,
+                              "RequireNumbers": true,
+                              "RequireSymbols": true
+                            }
+                          },
+                          LambdaConfig: {
+                            "CreateAuthChallenge":  {"Fn::GetAtt": [ "CreateAuthChallenge","Arn"]},
+                            "DefineAuthChallenge":  {"Fn::GetAtt": [ "DefineAuthChallenge","Arn"]},
+                            "PreSignUp":  {"Fn::GetAtt": [ "PreSignUp","Arn"]},
+                            "VerifyAuthChallengeResponse":  {"Fn::GetAtt": [ "VerifyAuthChallengeResponse","Arn"]},
+                            "PostAuthentication":  {"Fn::GetAtt": [ "PostAuthentication","Arn"]}
+                          }
+                        },
+                      "logic":false
+                  },
+                  {
+                      "name":"AuthUserPoolClient",
+                      "type":"userPoolClient",
+                      "config":{
+                          "UserPoolId": { "Ref" : "AuthUserPool"},
+                          "ClientName": "email-auth-client",
+                          "GenerateSecret": false,
+                          
+                          "ExplicitAuthFlows": [
+                            "CUSTOM_AUTH_FLOW_ONLY"
+                          ]
+                          
+                        },
+                      "logic":false
+                  },
+                  {
+                      "name":"PostAuthenticationRoles",
+                      "type":"iamrole",
+                      "config":{
+                       "iamservice":["AWSLambdaBasicExecutionRole"]
+                          
+                      },
+                      "logic":false
+                  },
+                  {
+                    "name":"AllowSetUserAttributes",
+                    "type":"iampolicy",
+                    "config":{
+                        
+                        "Statement":[
+                            {
+                                "Action": "cognito-idp:AdminUpdateUserAttributes",
+                                "Resource":   {"Fn::GetAtt": [ "AuthUserPool","Arn"]},
+                                "Effect": "Allow"
+                            }
+                       
+                        ],
+                        "Roles": [{"Ref" : "PostAuthenticationRole"}],
+                        "PolicyName": "AllowSetUserAttributespolicy"
+                    },
+                    "logic":false
+                  },
+                  {
+                    "name":"EmailAuthAPIs",
+                    "type":"apigateway",
+                    "config":{
+                        "objects":[
+                        {
+                          "name":"SignUp",
+                          "methods":["post"],
+                          "resource":"PostSignup",
+                          "iamservices":[],
+                          "path":"/signup",
+                          "resourcetype":"lambda"
+                        },
+                        {
+                          "name":"SignIn",
+                          "methods":["post"],
+                          "resource":"PostSignup",
+                          "iamservices":[],
+                          "path":"/signin",
+                          "resourcetype":"lambda"
+                        },
+                        {
+                          "name":"ResetPassword",
+                          "methods":["post"],
+                          "resource":"PostSignup",
+                          "iamservices":[],
+                          "path":"/resetpassword",
+                          "resourcetype":"lambda"
+                        }
+                        ]
+                      },
+                    "logic":false
+                  },
+              ]
+          
+          }
+      }
+  }
 }
+
     
