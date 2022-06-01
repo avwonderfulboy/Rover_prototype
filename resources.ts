@@ -18,7 +18,6 @@ function rolePolicyAddition(template,config){
     for (var j in  template["Properties"]["ManagedPolicyArns"]){
         template["Properties"]["ManagedPolicyArns"][j]=template["Properties"]["ManagedPolicyArns"][j]+config["iamservice"][j]
     }
-    
     //console.log("config",JSON.stringify(template["Properties"]["ManagedPolicyArns"]))
     for (let k in config["Policies"]){
         let role=JSON.parse(JSON.stringify(configs.PolicySkeleton))
@@ -64,11 +63,11 @@ const attachMethods = (methodArray,data) => {
     if(methodArray.length) {
         methodArray.map((item) => {
             result[item]= JSON.parse(JSON.stringify(configs.SwaggerPathSkeleton[item]))
-            let uri=result[item]["x-amazon-apigateway-integration"]["uri"]+configs.APIGatewayURI[data["resourcetype"]]
+            let uri=result[item]["x-amazon-apigateway-integration"]["uri"]["Fn::Sub"]+configs.APIGatewayURI[data["resourcetype"]]
             if (data["resourcetype"]=="lambda"){
                 uri=uri.replace("lambda.Arn",data["resource"]+".Arn")
             }
-            result[item]["x-amazon-apigateway-integration"]["uri"]=uri
+            result[item]["x-amazon-apigateway-integration"]["uri"]["Fn::Sub"]=uri
             return null
         })
     }

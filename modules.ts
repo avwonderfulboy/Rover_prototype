@@ -497,24 +497,24 @@ export let AppType={
                         {
                           "name":"SignUp",
                           "methods":["post"],
-                          "resource":"PostSignup",
-                          "iamservices":[],
+                          "resource":"PreSignUp",
+                          
                           "path":"/signup",
                           "resourcetype":"lambda"
                         },
                         {
                           "name":"SignIn",
                           "methods":["post"],
-                          "resource":"PostSignup",
-                          "iamservices":[],
+                          "resource":"PreSignUp",
+                          
                           "path":"/signin",
                           "resourcetype":"lambda"
                         },
                         {
                           "name":"ResetPassword",
                           "methods":["post"],
-                          "resource":"PostSignup",
-                          "iamservices":[],
+                          "resource":"PreSignUp",
+                          
                           "path":"/resetpassword",
                           "resourcetype":"lambda"
                         }

@@ -469,7 +469,7 @@ export let SwaggerPathSkeleton=  {
         },
         "x-amazon-apigateway-integration": {
             "httpMethod": "POST",
-            "uri": "arn:aws:apigateway:${AWS::Region}:",
+            "uri": {"Fn::Sub":"arn:aws:apigateway:${AWS::Region}:"},
             "responses": {
                 "default": {
                     "statusCode": "200",
@@ -517,7 +517,7 @@ export let SwaggerPathSkeleton=  {
         },
         "x-amazon-apigateway-integration": {
             "httpMethod": "POST",
-            "uri": "arn:aws:apigateway:${AWS::Region}:",
+            "uri": {"Fn::Sub":"arn:aws:apigateway:${AWS::Region}:"},
             "responses": {
                 "default": {
                     "statusCode": "200",
@@ -565,7 +565,7 @@ export let SwaggerPathSkeleton=  {
         },
         "x-amazon-apigateway-integration": {
             "httpMethod": "POST",
-            "uri": "arn:aws:apigateway:${AWS::Region}:",
+            "uri": {"Fn::Sub":"arn:aws:apigateway:${AWS::Region}:"},
             "responses": {
                 "default": {
                     "statusCode": "200",
@@ -613,7 +613,7 @@ export let SwaggerPathSkeleton=  {
         },
         "x-amazon-apigateway-integration": {
             "httpMethod": "POST",
-            "uri": "arn:aws:apigateway:${AWS::Region}:",
+            "uri": {"Fn::Sub":"arn:aws:apigateway:${AWS::Region}:"},
             "responses": {
                 "default": {
                     "statusCode": "200",
