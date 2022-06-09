@@ -102,12 +102,12 @@ export let AppType={
                            
                             "FunctionName": {"Fn::GetAtt": ["PostSignup","Arn"]},
                             "Principal": "cognito-idp.amazonaws.com",
-                            "SourceArn": {"Fn::GetAtt": ["AuthUserPool","Arn"]}
+                            "SourceArn": {"Fn::GetAtt": ["AuthUserPools","Arn"]}
                         },
                         "logic":false
                     },
                     {
-                        "name":"AuthUserPool",
+                        "name":"AuthUserPools",
                         "type":"cognitoUserPool",
                         "config":{
                             "UserPoolName": "Auth-User-Pool",
@@ -140,10 +140,10 @@ export let AppType={
                         "logic":false
                     },
                     {
-                        "name":"AuthUserPoolClient",
+                        "name":"AuthUserPoolsClient",
                         "type":"userPoolClient",
                         "config":{
-                            "UserPoolId": { "Ref" : "AuthUserPool"},
+                            "UserPoolId": { "Ref" : "AuthUserPools"},
                             "GenerateSecret": false,
                             "SupportedIdentityProviders": [
                                 config.CognitoSupportedIdentityProviders[0]
@@ -304,10 +304,94 @@ export let AppType={
                     "logic":true
                   },
                   {
-                    "name":"PostAuthentication",
+                    "name":"SignUpFunctions",
                     "type":"lambda",
                     "config":{
-                        "Role":  {"Fn::GetAtt": [ "PostAuthenticationRole","Arn"]},
+                        "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
+                        "Environment": {
+                            "Variables": {
+                            "userinfoTable": { "Ref" : "UserTabel"}
+                            }
+                        },
+                        "Policies": [
+                          "AWSLambdaDynamoDBExecutionRole",
+                          {
+                            "DynamoDBCrudPolicy": {
+                              "TableName": { "Ref" : "UserTabel"}
+                            }
+                          }
+                        ]
+                      },
+                    "logic":true
+                  },
+                  {
+                    "name":"ResendCode",
+                    "type":"lambda",
+                    "config":{
+                        "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
+                        "Environment": {
+                            "Variables": {
+                            "userinfoTable": { "Ref" : "UserTabel"}
+                            }
+                        },
+                        "Policies": [
+                          "AWSLambdaDynamoDBExecutionRole",
+                          {
+                            "DynamoDBCrudPolicy": {
+                              "TableName": { "Ref" : "UserTabel"}
+                            }
+                          }
+                        ]
+                      },
+                    "logic":true
+                  },
+                  {
+                    "name":"ConfirmForgotPassword",
+                    "type":"lambda",
+                    "config":{
+                        "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
+                        "Environment": {
+                            "Variables": {
+                            "userinfoTable": { "Ref" : "UserTabel"}
+                            }
+                        },
+                        "Policies": [
+                          "AWSLambdaDynamoDBExecutionRole",
+                          {
+                            "DynamoDBCrudPolicy": {
+                              "TableName": { "Ref" : "UserTabel"}
+                            }
+                          }
+                        ]
+                      },
+                    "logic":true
+                  },
+                  {
+                    "name":"ForgotPassword",
+                    "type":"lambda",
+                    "config":{
+                        "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
+                        "Environment": {
+                            "Variables": {
+                            "userinfoTable": { "Ref" : "UserTabel"}
+                            }
+                        },
+                        "Policies": [
+                          "AWSLambdaDynamoDBExecutionRole",
+                          {
+                            "DynamoDBCrudPolicy": {
+                              "TableName": { "Ref" : "UserTabel"}
+                            }
+                          }
+                        ]
+                      },
+                    "logic":true
+                  },
+                  {
+                    "name":"ConfirmUser",
+                    "type":"lambda",
+                    "config":{
+                        "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
                         "Environment": {
                             "Variables": {
                             "userinfoTable": { "Ref" : "UserTabel"}
@@ -352,7 +436,7 @@ export let AppType={
                         "Action": "lambda:InvokeFunction",
                         "FunctionName":  {"Fn::GetAtt": [ "CreateAuthChallenge","Arn"]},
                         "Principal": "cognito-idp.amazonaws.com",
-                        "SourceArn":  {"Fn::GetAtt": [ "AuthUserPool","Arn"]}
+                        "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
                       },
                       "logic":false
                   },
@@ -364,7 +448,7 @@ export let AppType={
                       "Action": "lambda:InvokeFunction",
                       "FunctionName":  {"Fn::GetAtt": [ "DefineAuthChallenge","Arn"]},
                       "Principal": "cognito-idp.amazonaws.com",
-                      "SourceArn":  {"Fn::GetAtt": [ "AuthUserPool","Arn"]}
+                      "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
                     },
                     "logic":false
                   },
@@ -376,18 +460,18 @@ export let AppType={
                     "Action": "lambda:InvokeFunction",
                     "FunctionName":  {"Fn::GetAtt": [ "VerifyAuthChallengeResponse","Arn"]},
                     "Principal": "cognito-idp.amazonaws.com",
-                    "SourceArn":  {"Fn::GetAtt": [ "AuthUserPool","Arn"]}
+                    "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
                   },
                   "logic":false
                   },
                   {
-                "name":"PostAuthenticationInvocationPermission",
+                "name":"SignUpInvocationPermission",
                 "type":"lambdaPermission",
                 "config":{
                     "Principal": "cognito-idp.amazonaws.com",
                     "Action": "lambda:InvokeFunction",
-                    "FunctionName": {"Fn::GetAtt": ["PostAuthentication","Arn"]},
-                    "SourceArn":  {"Fn::GetAtt": [ "AuthUserPool","Arn"]}
+                    "FunctionName": {"Fn::GetAtt": ["SignUpFunctions","Arn"]},
+                    "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
                 },
                 "logic":false
                   },
@@ -399,18 +483,24 @@ export let AppType={
                 "Action": "lambda:InvokeFunction",
                 "FunctionName":  {"Fn::GetAtt": [ "PreSignUp","Arn"]},
                 "Principal": "cognito-idp.amazonaws.com",
-                "SourceArn":  {"Fn::GetAtt": [ "AuthUserPool","Arn"]}
+                "SourceArn":  {"Fn::GetAtt": [ "AuthUserPools","Arn"]}
 
                  
               },
               "logic":false
                   },
                   {
-                      "name":"AuthUserPool",
+                      "name":"AuthUserPools",
                       "type":"cognitoUserPool",
                       "config":{
                           UserPoolName: "Auth-User-Pool",
                           MfaConfiguration: "OFF",
+                          AutoVerifiedAttributes:[
+                            "email"
+                          ],
+                          EmailVerificationSubject: "Your verification code",
+                          EmailVerificationMessage: "Your verification code is {####}",
+                          EmailConfiguration:{EmailSendingAccount: "COGNITO_DEFAULT"},
                           UsernameAttributes: [
                             "email"
                           ],
@@ -438,20 +528,20 @@ export let AppType={
                             }
                           },
                           LambdaConfig: {
-                            "CreateAuthChallenge":  {"Fn::GetAtt": [ "CreateAuthChallenge","Arn"]},
-                            "DefineAuthChallenge":  {"Fn::GetAtt": [ "DefineAuthChallenge","Arn"]},
-                            "PreSignUp":  {"Fn::GetAtt": [ "PreSignUp","Arn"]},
+                            "CreateAuthChallenge":          {"Fn::GetAtt": [ "CreateAuthChallenge","Arn"]},
+                            "DefineAuthChallenge":          {"Fn::GetAtt": [ "DefineAuthChallenge","Arn"]},
+                            "PreSignUp":                    {"Fn::GetAtt": [ "PreSignUp","Arn"]},
                             "VerifyAuthChallengeResponse":  {"Fn::GetAtt": [ "VerifyAuthChallengeResponse","Arn"]},
-                            "PostAuthentication":  {"Fn::GetAtt": [ "PostAuthentication","Arn"]}
+                            
                           }
                         },
                       "logic":false
                   },
                   {
-                      "name":"AuthUserPoolClient",
+                      "name":"AuthUserPoolsClient",
                       "type":"userPoolClient",
                       "config":{
-                          "UserPoolId": { "Ref" : "AuthUserPool"},
+                          "UserPoolId": { "Ref" : "AuthUserPools"},
                           "ClientName": "email-auth-client",
                           "GenerateSecret": false,
                           
@@ -463,10 +553,39 @@ export let AppType={
                       "logic":false
                   },
                   {
-                      "name":"PostAuthenticationRoles",
+                      "name":"SignUpRoles",
                       "type":"iamrole",
                       "config":{
-                       "iamservice":["AWSLambdaBasicExecutionRole"]
+                       "iamservice":["lambda.amazonaws.com","apigateway.amazonaws.com"],
+                       "managedarn":["AWSLambdaBasicExecutionRole","AmazonAPIGatewayPushToCloudWatchLogs"],
+                       "Path": "/",
+                       "Policies":[
+                           {  "name":"lambdainvoke",
+                               "Action": "lambda:InvokeFunction",
+                               "Resource": { "Fn::Sub":"arn:aws:lambda:*:${AWS::AccountId}:function:*"}
+                           },
+                           {  "name":"cognito",
+                               "Action": "cognito-idp:ListUsers",
+                               "Resource": { "Fn::Sub":"arn:aws:cognito-idp:*:${AWS::AccountId}:userpool/*"}
+                           },
+                           {  "name":"dynamodbcrud",
+                               "Action":  [
+                                "dynamodb:GetItem",
+                                "dynamodb:DeleteItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:Scan",
+                                "dynamodb:Query",
+                                "dynamodb:UpdateItem",
+                                "dynamodb:BatchWriteItem",
+                                "dynamodb:BatchGetItem",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:ConditionCheckItem"
+                            ],
+                               "Resource":[ { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTabel"},
+                               { "Fn::Sub":"arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserTabel/index/*"}
+            ]
+                           }
+                       ]
                           
                       },
                       "logic":false
@@ -479,12 +598,12 @@ export let AppType={
                         "Statement":[
                             {
                                 "Action": "cognito-idp:AdminUpdateUserAttributes",
-                                "Resource":   {"Fn::GetAtt": [ "AuthUserPool","Arn"]},
+                                "Resource":   {"Fn::GetAtt": [ "AuthUserPools","Arn"]},
                                 "Effect": "Allow"
                             }
                        
                         ],
-                        "Roles": [{"Ref" : "PostAuthenticationRole"}],
+                        "Roles": [{"Ref" : "SignUpRoles"}],
                         "PolicyName": "AllowSetUserAttributespolicy"
                     },
                     "logic":false
@@ -495,30 +614,55 @@ export let AppType={
                     "config":{
                         "objects":[
                         {
-                          "name":"SignUp",
+                          "name":"SignUpFunctions",
                           "methods":["post"],
-                          "resource":"PreSignUp",
-                          
-                          "path":"/signup",
+                          "resource":"SignUpFunctions",
+                          "role":"SignUpRoles",
+                          "path":"/SignUp",
                           "resourcetype":"lambda"
                         },
                         {
                           "name":"SignIn",
                           "methods":["post"],
-                          "resource":"PreSignUp",
-                          
+                          "resource":"SignUpFunctions",
+                          "role":"SignUpRoles",
                           "path":"/signin",
                           "resourcetype":"lambda"
                         },
                         {
-                          "name":"ResetPassword",
+                          "name":"ConfirmUser",
                           "methods":["post"],
-                          "resource":"PreSignUp",
-                          
-                          "path":"/resetpassword",
+                          "resource":"ConfirmUser",
+                          "role":"SignUpRoles",
+                          "path":"/confirmuser",
+                          "resourcetype":"lambda"
+                        },
+                        {
+                          "name":"ResendCode",
+                          "methods":["post"],
+                          "resource":"ResendCode",
+                          "role":"SignUpRoles",
+                          "path":"/resendcode",
+                          "resourcetype":"lambda"
+                        },
+                        {
+                          "name":"ConfirmForgotPassword",
+                          "methods":["post"],
+                          "resource":"ConfirmForgotPassword",
+                          "role":"SignUpRoles",
+                          "path":"/confirmforgotPassword",
+                          "resourcetype":"lambda"
+                        },
+                        {
+                          "name":"ForgotPassword",
+                          "methods":["post"],
+                          "resource":"ForgotPassword",
+                          "role":"SignUpRoles",
+                          "path":"/forgotpassword",
                           "resourcetype":"lambda"
                         }
                         ]
+                       
                       },
                     "logic":false
                   },

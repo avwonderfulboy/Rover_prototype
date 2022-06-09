@@ -2,12 +2,12 @@ export let LambdaLogics={
     "nodejs14.x":{
         "email_auth_app":{
             
-            "PreSignUp":`module.exports.handler = async event => {
-                event.response.autoConfirmUser = true;
-                event.response.autoVerifyEmail = true;
+            "PreSignUp":`exports.lambdaHandler = async event => {
+                event.response.autoConfirmUser = false;
+                event.response.autoVerifyEmail = false;
                 return event;
             };`,
-            "DefineAuthChallenge":`module.exports.handler = async event => {
+            "DefineAuthChallenge":`exports.lambdaHandler = async event => {
                 if (event.request.session &&
                     event.request.session.length >= 3 &&
                     event.request.session.slice(-1)[0].challengeResult === false) {
@@ -30,47 +30,19 @@ export let LambdaLogics={
                 return event;
             };
             `,
-            "CreateAuthChallenge":`const mongoose = require('mongoose');
-
-            module.exports.handler = async event => {
+            "CreateAuthChallenge":`
+                exports.lambdaHandler = async event => {
                 const connectionString = process.env.DB_CONNECTION_STRING
-            
-                try {
-                    mongoose.connect(connectionString);
-                } catch(err) {
-                   
-                }
-                const { Schema } = mongoose;
-                const userSchema = new Schema({
-                    username: {
-                        type: String,
-                        required: true
-                    },
-                    password: {
-                        type: String,
-                        required: true
-                    }
-                });
-            
-                mongoose.models = {}
-                const userModel = mongoose.model('User', userSchema);
-            
                 let password;
-            
                 if(!event.request.session || !event.request.session.length) {
                     // new session, so fetch password from the db
                     const username = event.request.userAttributes.email;
-                    const user = await userModel.findOne({ "username": username});
-                    password = user.password;
+                    const user =event.request.userAttributes.username;
+                    const password = event.request.userAttributes.password;
                 } else {
-                    // There's an existing session. Don't generate new digits but
-                    // re-use the code from the current session. This allows the user to
-                    // make a mistake when keying in the code and to then retry, rather
-                    // the needing to e-mail the user an all new code again.    
                     const previousChallenge = event.request.session.slice(-1)[0];
-                    password = previousChallenge.challengeMetadata.match(/PASSWORD-(\d*)/)[1];
+                    password = previousChallenge.challengeMetadata.match(/PASSWORD-(d*)/)[1];
                 }
-            
                 // This is sent back to the client app
                 event.response.publicChallengeParameters = { username: event.request.userAttributes.email };
             
@@ -80,14 +52,12 @@ export let LambdaLogics={
             
                 // Add the secret login code to the session so it is available
                 // in a next invocation of the "Create Auth Challenge" trigger
-                event.response.challengeMetadata = \`PASSWORD-\${password}\`;
-            
-                mongoose.connection.close()
+                event.response.challengeMetadata = \`PASSWORD-\${password}\`;    
                 return event;
             
             }`,
             "VerifyAuthChallengeResponse":`const md5 = require('md5');
-            module.exports.handler = async event => {
+            exports.lambdaHandler = async event => {
                 const expectedAnswer = event.request.privateChallengeParameters.password; 
                 if (md5(event.request.challengeAnswer) === expectedAnswer) {
                     event.response.answerCorrect = true;
@@ -96,7 +66,226 @@ export let LambdaLogics={
                 }
                 return event;
             };`,
-            "PostAuthentication":``
+            "SignUpFunctions":`
+            let response;
+                const aws = require('aws-sdk');
+
+                exports.lambdaHandler = async (event, context) => {
+                    try {
+                        if(event.body!==undefined){
+                            event=JSON.parse(event.body)
+                        }
+                        // const ret = await axios(url);
+                        const cognito = new aws.CognitoIdentityServiceProvider();
+                        const params = {
+                            ClientId: "3p6cqj50cvn3596p44c8ck1s1e",
+                            Username:event.emailId,
+                            Password: event.Password,
+                            UserAttributes:[
+                            {
+                    Name: 'email',
+                    Value: event.emailId,
+                    },
+                    {
+                    Name: "name",
+                    Value: event.name
+                    }]
+                        };
+                        console.log(params)
+                        let res=await cognito.signUp(params).promise();
+                        response = {
+                            'statusCode': 200,
+                            'body': JSON.stringify(res)
+                        }
+                    } catch (err) {
+                        console.log(err);
+                        response = {
+                        'statusCode': 200,
+                    'body': JSON.stringify(err)
+                        }
+                    }
+
+                    return response
+                };`,
+            "ResendCode":`
+            let response;
+            const aws = require('aws-sdk');
+            exports.lambdaHandler = async (event, context) => {
+                try {
+                    if(event.body!==undefined){
+                        event=JSON.parse(event.body)
+                    }
+                    const cognito = new aws.CognitoIdentityServiceProvider();
+                    
+                    var params = {
+                                    ClientId: "3p6cqj50cvn3596p44c8ck1s1e",
+                                    Username: event.emailId
+              }
+              let res=await cognito.resendConfirmationCode(params).promise();
+              
+              
+                    response = {
+                        'statusCode': 200,
+                        'body': JSON.stringify({
+                            message: res,
+                           
+                        })
+                    }
+                } catch (err) {
+                    console.log(err);
+                    response = {
+                        'statusCode': 200,
+                        'body': JSON.stringify(err)
+                        }
+                }
+            
+                return response
+            };
+            `,
+            "ConfirmUser":`let response;
+            const aws = require('aws-sdk');
+            const dynamoDB = new aws.DynamoDB.DocumentClient();
+            const UserTable = process.env.userinfoTable
+            
+            async function addUserData(userData) {
+                try {
+                        console.log("[INFO] addUserData input",userData)
+                        const params = {
+                                        TableName: UserTable,
+                                        Item: userData
+            
+                        };
+                        var Items  = await dynamoDB.put(params).promise();
+                        console.log("[INFO] addUserData output",Items)
+                        return Items
+            
+                } 
+                catch (err) {
+                        throw err;
+                }
+            }
+            exports.lambdaHandler = async (event, context) => {
+                try {
+                    if(event.body!==undefined){
+                        event=JSON.parse(event.body)
+                    }
+                    const cognito = new aws.CognitoIdentityServiceProvider();
+                    var params = {
+                                    ClientId: "3p6cqj50cvn3596p44c8ck1s1e",
+                                    ConfirmationCode: event.Code,
+                                    Username: event.emailId
+              }
+                   let res=await cognito.confirmSignUp(params).promise();
+                    
+                    var params1 = {
+                                    UserPoolId: "ap-south-1_1yC44cNIk",
+                                   AttributesToGet: ["email","name","sub"],
+                                   
+              }
+              
+                    
+                    res=await cognito.listUsers(params1).promise();
+                    let user={}
+                    let Attributes={}
+                    res["Users"].map(ele=>{
+                        
+                        Attributes = ele["Attributes"].find(ele=>ele.Name==="email"&&ele.Value==event.emailId)
+                        if (Attributes!==undefined) {
+                            ele["Attributes"].map(ele=>{
+                                user[ele.Name]=ele.Value
+                            })
+                        }
+                        
+            
+                    })
+                    console.log(user)
+                    await addUserData(user)
+                    response = {
+                        'statusCode': 200,
+                        'body': JSON.stringify({
+                            message: res,
+                           
+                        })
+                    }
+                // await addUserData()
+                } catch (err) {
+                    console.log(err);
+                    response = {
+                        'statusCode': 200,
+                        'body': JSON.stringify(err)
+                        }
+                }
+            
+                return response
+            };
+            `,
+            "ConfirmForgotPassword":`
+            let response;
+            const aws = require('aws-sdk');
+            exports.lambdaHandler = async (event, context) => {
+                try {
+                    if(event.body!==undefined){
+                        event=JSON.parse(event.body)
+                    }
+                    const cognito = new aws.CognitoIdentityServiceProvider();
+                    var params = {
+                                    ClientId: "3p6cqj50cvn3596p44c8ck1s1e",
+                                    ConfirmationCode: event.Code,
+                                    Username: event.emailId,
+                                    Password:  event.password, /* required */
+              }
+              let res=await cognito.confirmForgotPassword(params).promise();
+                    response = {
+                        'statusCode': 200,
+                        'body': JSON.stringify({
+                            message: res,
+                           
+                        })
+                    }
+                } catch (err) {
+                    console.log(err);
+                    response = {
+                        'statusCode': 200,
+                        'body': JSON.stringify(err)
+                        }
+                }
+            
+                return response
+            };
+            `,
+            "ForgotPassword":`
+            let response;
+            const aws = require('aws-sdk');
+            exports.lambdaHandler = async (event, context) => {
+                try {
+                    if(event.body!==undefined){
+                        event=JSON.parse(event.body)
+                    }
+                    const cognito = new aws.CognitoIdentityServiceProvider();
+                    var params = {
+                                    ClientId: "3p6cqj50cvn3596p44c8ck1s1e",
+                                    Username: event.emailId
+                                }
+              let res=await cognito.forgotPassword(params).promise();
+                    response = {
+                        'statusCode': 200,
+                        'body': JSON.stringify({
+                            message: res,
+                           
+                        })
+                    }
+                } catch (err) {
+                    console.log(err);
+                    response = {
+                        'statusCode': 200,
+                        'body': JSON.stringify(err)
+                        }
+                }
+            
+                return response
+            };
+            `
+
         
     }
 }

@@ -194,7 +194,7 @@ export let AWSResources={
         "attributes":["Type","Properties"],
         "Properties":{
             "Base":["FunctionName","CodeUri","Runtime"],
-            "Optional":["Events","Environment","Policies"],
+            "Optional":["Events","Environment","Policies","Role"],
             "Default":{
                 "Handler":{
                     "Key":"Handler",
@@ -465,6 +465,60 @@ export let SwaggerPathSkeleton=  {
                         }
                     }
                 }
+            },
+            "400": {
+                "description": "200 response",
+                "headers": {
+                    "Access-Control-Allow-Origin": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Methods": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Headers": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Empty"
+                        }
+                    }
+                }
+            },
+            "500": {
+                "description": "200 response",
+                "headers": {
+                    "Access-Control-Allow-Origin": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Methods": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Headers": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Empty"
+                        }
+                    }
+                }
             }
         },
         "x-amazon-apigateway-integration": {
@@ -477,7 +531,10 @@ export let SwaggerPathSkeleton=  {
                         "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
                         "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
                         "method.response.header.Access-Control-Allow-Origin": "'*'"
-                    }
+                    },
+                    "responseTemplates": {
+                        "application/json": "{}    \n"
+                      }
                 }
             },
             "passthroughBehavior": "when_no_match",
@@ -513,6 +570,60 @@ export let SwaggerPathSkeleton=  {
                         }
                     }
                 }
+            },
+            "400": {
+                "description": "200 response",
+                "headers": {
+                    "Access-Control-Allow-Origin": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Methods": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Headers": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Empty"
+                        }
+                    }
+                }
+            },
+            "500": {
+                "description": "200 response",
+                "headers": {
+                    "Access-Control-Allow-Origin": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Methods": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Headers": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Empty"
+                        }
+                    }
+                }
             }
         },
         "x-amazon-apigateway-integration": {
@@ -525,7 +636,10 @@ export let SwaggerPathSkeleton=  {
                         "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
                         "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
                         "method.response.header.Access-Control-Allow-Origin": "'*'"
-                    }
+                    },
+                    "responseTemplates": {
+                        "application/json": "{}    \n"
+                      }
                 }
             },
             "passthroughBehavior": "when_no_match",
@@ -561,6 +675,60 @@ export let SwaggerPathSkeleton=  {
                         }
                     }
                 }
+            },
+            "400": {
+                "description": "200 response",
+                "headers": {
+                    "Access-Control-Allow-Origin": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Methods": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Headers": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Empty"
+                        }
+                    }
+                }
+            },
+            "500": {
+                "description": "200 response",
+                "headers": {
+                    "Access-Control-Allow-Origin": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Methods": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Headers": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Empty"
+                        }
+                    }
+                }
             }
         },
         "x-amazon-apigateway-integration": {
@@ -573,7 +741,10 @@ export let SwaggerPathSkeleton=  {
                         "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
                         "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
                         "method.response.header.Access-Control-Allow-Origin": "'*'"
-                    }
+                    },
+                    "responseTemplates": {
+                        "application/json": "{}    \n"
+                      }
                 }
             },
             "passthroughBehavior": "when_no_match",
@@ -609,6 +780,60 @@ export let SwaggerPathSkeleton=  {
                         }
                     }
                 }
+            },
+            "400": {
+                "description": "200 response",
+                "headers": {
+                    "Access-Control-Allow-Origin": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Methods": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Headers": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Empty"
+                        }
+                    }
+                }
+            },
+            "500": {
+                "description": "200 response",
+                "headers": {
+                    "Access-Control-Allow-Origin": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Methods": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Headers": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Empty"
+                        }
+                    }
+                }
             }
         },
         "x-amazon-apigateway-integration": {
@@ -621,7 +846,10 @@ export let SwaggerPathSkeleton=  {
                         "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
                         "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
                         "method.response.header.Access-Control-Allow-Origin": "'*'"
-                    }
+                    },
+                    "responseTemplates": {
+                        "application/json": "{}    \n"
+                      }
                 }
             },
             "passthroughBehavior": "when_no_match",
@@ -657,6 +885,60 @@ export let SwaggerPathSkeleton=  {
                         }
                     }
                 }
+            },
+            "400": {
+                "description": "200 response",
+                "headers": {
+                    "Access-Control-Allow-Origin": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Methods": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Headers": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Empty"
+                        }
+                    }
+                }
+            },
+            "500": {
+                "description": "200 response",
+                "headers": {
+                    "Access-Control-Allow-Origin": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Methods": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "Access-Control-Allow-Headers": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Empty"
+                        }
+                    }
+                }
             }
         },
         "x-amazon-apigateway-integration": {
@@ -667,7 +949,10 @@ export let SwaggerPathSkeleton=  {
                         "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
                         "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
                         "method.response.header.Access-Control-Allow-Origin": "'*'"
-                    }
+                    },
+                    "responseTemplates": {
+                        "application/json": "{}    \n"
+                      }
                 }
             },
             "requestTemplates": {

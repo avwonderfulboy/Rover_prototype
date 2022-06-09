@@ -16,6 +16,22 @@ export  function addResourceTemplate(resources, name){
         }
         return template   
 }
+export function yamlReplace(doc){
+    let yamlArray = {
+        // "off": "'off'",
+        // "on": "'on'",
+        // "yes":"'yes'",
+        // "no":"'no'",
+        "OFF": "'OFF'",
+        // "ON": "'ON'",
+        // "YES":"'YES'",
+        // "NO":"'NO'",
+    }
+    Object.keys(yamlArray).map((key)=> {
+        doc=doc.replace(key, yamlArray[key])
+    });
+    return doc
+}
 export  function stackCreation(app_name,language,extension,AppType,stack_number,stack_names,resource){
     let j= exec("mv "+pwd+app_name+"/hello-world "+pwd+app_name+"/"+"lambda_demo")
         let stackes={}
@@ -69,7 +85,8 @@ export  function stackCreation(app_name,language,extension,AppType,stack_number,
                 let template1= addResourceTemplate(res,Object.keys(res))
                 let doc = new yaml.Document();
                 doc.contents = template1;
-                writeFile(app_name+"/"+stack_names[i]+"_Stack"+"/template.yaml",doc.toString())   
+                let temp=yamlReplace(doc.toString())
+                writeFile(app_name+"/"+stack_names[i]+"_Stack"+"/template.yaml",temp)   
         }
                 let template= addResourceTemplate(stackes,stack_names)
                 let doc = new yaml.Document();
@@ -134,5 +151,6 @@ export  function stacksCreation(app_name,language,extension,AppType,stack_number
                 let template= addResourceTemplate(stackes,stack_names)
                 let doc = new yaml.Document();
                 doc.contents = template;
+                console.log(doc)
                 writeFile(app_name+"/template.yaml",doc.toString())
 }

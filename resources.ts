@@ -15,13 +15,20 @@ export  function skeleton(){
 }
 function rolePolicyAddition(template,config){
     let policies=[]
-    for (var j in  template["Properties"]["ManagedPolicyArns"]){
-        template["Properties"]["ManagedPolicyArns"][j]=template["Properties"]["ManagedPolicyArns"][j]+config["iamservice"][j]
+    let base =template["Properties"]["ManagedPolicyArns"][0]
+    for (var j in  config["managedarn"]){
+        template["Properties"]["ManagedPolicyArns"][j]=base+config["managedarn"][j]
     }
+    if(config.hasOwnProperty(["iamservice"])){
+        for (var j in  config["iamservice"]){
+            template["Properties"]["AssumeRolePolicyDocument"]["Statement"][0]["Principal"]["Service"].push(config["iamservice"][j])
+        }
+    }
+    
     //console.log("config",JSON.stringify(template["Properties"]["ManagedPolicyArns"]))
     for (let k in config["Policies"]){
         let role=JSON.parse(JSON.stringify(configs.PolicySkeleton))
-        
+        role["PolicyName"]=config["Policies"][k]["name"]
         role["PolicyDocument"]["Statement"][0]["Action"]=config["Policies"][k]["Action"]
         role["PolicyDocument"]["Statement"][0]["Resource"]=config["Policies"][k]["Resource"]
         policies.push(role)
@@ -68,6 +75,8 @@ const attachMethods = (methodArray,data) => {
                 uri=uri.replace("lambda.Arn",data["resource"]+".Arn")
             }
             result[item]["x-amazon-apigateway-integration"]["uri"]["Fn::Sub"]=uri
+            result[item]["x-amazon-apigateway-integration"]["credentials"]={}
+            result[item]["x-amazon-apigateway-integration"]["credentials"]["Fn::Sub"]="${"+data["role"]+".Arn}"
             return null
         })
     }
@@ -94,6 +103,7 @@ export let resourceGeneration=function(resource_name,config){
             }
             for (let l in resource_properties.Properties.Optional){
                 if (config[resource_properties.Properties.Optional[l]]!==undefined){
+                   
                     template[resource_properties.attributes[j]][resource_properties.Properties.Optional[l]]=config[resource_properties.Properties.Optional[l]]
                 }
             }
