@@ -186,7 +186,8 @@ export let AWSResourcesTypes={
     "s3bucket":"AWS::S3::Bucket",
     "apikey": "AWS::ApiGateway::ApiKey",
     "usageplankey":"AWS::ApiGateway::UsagePlanKey",
-    "usageplan":"AWS::ApiGateway::UsagePlan"
+    "usageplan":"AWS::ApiGateway::UsagePlan",
+    "apiauthorizer":"AWS::ApiGateway::Authorizer"
   
 }
 export let AWSResources={
@@ -459,6 +460,23 @@ export let AWSResources={
             "Base":["KeyId" ,"KeyType" ,"UsagePlanId" ],
             "Optional":[],
                 "Default":{}
+        }
+    },
+    "apiauthorizer":{ 
+        "attributes":["Type","Properties","DependsOn"],
+        "Properties":{
+            "Base":["Name" ,"RestApiId" ,"Type" ],
+            "Optional":[
+            "AuthorizerCredentials",
+            "AuthorizerResultTtlInSeconds",
+            "AuthorizerUri",
+            "AuthType",
+            "IdentitySource",
+            "IdentityValidationExpression",
+            "ProviderARNs"
+            
+            ],
+            "Default":{}
         }
     }
 

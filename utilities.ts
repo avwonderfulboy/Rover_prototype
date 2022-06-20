@@ -82,7 +82,9 @@ export  function stackCreation(app_name,language,extension,AppType,stack_number,
                         configs["Name"]=resources["resources"][j]["name"]
                     }else if(resources["resources"][j]["type"]=="usageplan"){
                         configs["UsagePlanName"]=resources["resources"][j]["name"]
-                    } 
+                    }else if(resources["resources"][j]["type"]=="apiauthorizer"){
+                        configs["Name"]=resources["resources"][j]["name"]
+                    }
                     let resources1=rover_resources.resourceGeneration(resources["resources"][j]["type"],configs)
                     res[resources["resources"][j]["name"]] = resources1
                 }

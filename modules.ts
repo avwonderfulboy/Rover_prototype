@@ -770,7 +770,21 @@ export let AppType={
                       "UsagePlanId": {"Ref" :"ClientOrderUsagePlan"}
                     }
                   
-                }
+                  },
+                  {
+                      "name":"CognitoAuthorizer",
+                      "type": "apiauthorizer",
+                      "config": {
+                        "IdentitySource": "method.request.header.authorization",
+                        "Name": "CognitoAuthorizer",
+                        "ProviderARNs": [
+                          {"Fn::GetAtt": [ "AuthUserPools","Arn"]},
+                        ],
+                        "RestApiId":{"Ref" :"EmailAuthAPIs"},
+                        "Type": "COGNITO_USER_POOLS"
+                      }
+                    
+                  }
                   
               ]
           
