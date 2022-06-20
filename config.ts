@@ -87,6 +87,12 @@ export let PolicySkeleton={
    
 }
 
+export let APIAuthorizerARN={
+    
+    "lambda":"arn:aws:apigateway:${Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:FunctionName/invocations",
+    "cognito":"arn:aws:cognito-idp:{region}:{account_id}:userpool/{UserPoolID}"
+}
+
 export let CognitoAllowedOAuthScopes= [
     "phone",
     "email",
@@ -177,13 +183,15 @@ export let AWSResourcesTypes={
     "iampolicy":"AWS::IAM::Policy",
     "apigateway": "AWS::Serverless::Api",
     "stepfunction":"AWS::Serverless::StateMachine",
-    "s3bucket":"AWS::S3::Bucket"
-
+    "s3bucket":"AWS::S3::Bucket",
+    "apikey": "AWS::ApiGateway::ApiKey",
+    "usageplankey":"AWS::ApiGateway::UsagePlanKey",
+    "usageplan":"AWS::ApiGateway::UsagePlan"
   
 }
 export let AWSResources={
     "stack":{
-        "attributes":["Type","Properties"],
+        "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["TemplateURL"],
             "Optional":["NotificationARNs","Parameters" ,"Tags"  ,"TemplateURL" ,"TimeoutInMinutes"]
@@ -191,7 +199,7 @@ export let AWSResources={
         
     },
     "lambda":{
-        "attributes":["Type","Properties"],
+        "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["FunctionName","CodeUri","Runtime"],
             "Optional":["Events","Environment","Policies","Role"],
@@ -204,7 +212,7 @@ export let AWSResources={
         }
     },
     "dynamoDB":{
-            "attributes":["Type","Properties"],
+            "attributes":["Type","Properties","DependsOn"],
             "Properties":{
                 "Base":["TableName","KeySchema"],
                 "Optional":[
@@ -225,7 +233,7 @@ export let AWSResources={
 
     },
     "cognitoUserPool":{
-            "attributes":["Type","Properties"],
+            "attributes":["Type","Properties","DependsOn"],
             "Properties":{
                 "Base":["UserPoolName"],
                 "Optional":[
@@ -254,7 +262,7 @@ export let AWSResources={
 
     },
     "userPoolClient":{
-        "attributes":["Type","Properties"],
+        "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["UserPoolId"],
             "Optional":[
@@ -280,7 +288,7 @@ export let AWSResources={
         }
     },
     "lambdaPermission":{
-        "attributes":["Type","Properties"],
+        "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["FunctionName","Principal"],
             "Optional":[
@@ -296,7 +304,7 @@ export let AWSResources={
         }
     },
     "iamrole":{
-        "attributes":["Type","Properties"],
+        "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["AssumeRolePolicyDocument"],
             "Optional":[
@@ -321,7 +329,7 @@ export let AWSResources={
         }
     },
     "iampolicy":{
-        "attributes":["Type","Properties"],
+        "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["PolicyName"],
             "Optional":[
@@ -334,10 +342,11 @@ export let AWSResources={
         }
     },
     "apigateway":{
-        "attributes":["Type","Properties"],
+        "attributes":["Type","Properties","DependsOn"],
         "Properties":{
-            "Base":[ "StageName"],
+            "Base":[ "Name"],
             "Optional":[
+                "StageName",
                 "AccessLogSetting", 
                 "Auth", 
                 "BinaryMediaTypes", 
@@ -366,7 +375,7 @@ export let AWSResources={
         }
     },
     "stepfunction":{
-        "attributes":["Type","Properties"],
+        "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":[ "Definition", "DefinitionUri"],
             "Optional":[
@@ -387,7 +396,7 @@ export let AWSResources={
         }
     },
     "s3bucket":{
-        "attributes":["Type","Properties"],
+        "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":[ "BucketName"],
             "Optional":[
@@ -411,6 +420,44 @@ export let AWSResources={
                 "VersioningConfiguration" ,
                 "WebsiteConfiguration",
                 ],
+                "Default":{}
+        }
+    },
+    "apikey":{
+        "attributes":["Type","Properties","DependsOn"],
+        "Properties":{
+            "Base":[ "Name"],
+            "Optional":[
+                "CustomerId",
+                "Description",
+                "Enabled" ,
+                "GenerateDistinctId" ,
+                "StageKeys", 
+                "Tags",
+                "Value"
+                ],
+                "Default":{}
+        }
+    },
+    "usageplan":{
+        "attributes":["Type","Properties","DependsOn"],
+        "Properties":{
+            "Base":[ "UsagePlanName"],
+            "Optional":[
+                "ApiStages",
+                "Description",
+                "Quota",
+                "Tags",
+                "Throttle"
+                ],
+                "Default":{}
+        }
+    },
+    "usageplankey":{
+        "attributes":["Type","Properties","DependsOn"],
+        "Properties":{
+            "Base":["KeyId" ,"KeyType" ,"UsagePlanId" ],
+            "Optional":[],
                 "Default":{}
         }
     }

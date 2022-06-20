@@ -238,6 +238,28 @@ export let AppType={
                       "logic":true
                   },
                   {
+                    "name":"AuthorizerFunction",
+                    "type":"lambda",
+                    "config":{
+                        "Environment": {
+                            "Variables": {
+                            "UserPoolID": { "Ref" : "AuthUserPools"},
+                            "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"}
+                            }
+                        },
+                        "Policies": [
+                          "AWSLambdaDynamoDBExecutionRole",
+                          {
+                            "DynamoDBCrudPolicy": {
+                              "TableName": { "Ref" : "UserTabel"}
+                             
+                            }
+                          }
+                        ]
+                      },
+                    "logic":true
+                  },
+                  {
                     "name":"CreateAuthChallenge",
                     "type":"lambda",
                     "config":{
@@ -276,7 +298,8 @@ export let AppType={
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"}
+                              "TableName": { "Ref" : "UserTabel"},
+                              "USERPOOLID": { "Ref" : "AuthUserPools"}
                             }
                           }
                         ]
@@ -317,7 +340,8 @@ export let AppType={
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"}
+                              "TableName": { "Ref" : "UserTabel"},
+                              "USERPOOLID": { "Ref" : "AuthUserPools"}
                             }
                           }
                         ]
@@ -338,7 +362,8 @@ export let AppType={
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"}
+                              "TableName": { "Ref" : "UserTabel"},
+                              "USERPOOLID": { "Ref" : "AuthUserPools"}
                             }
                           }
                         ]
@@ -359,7 +384,8 @@ export let AppType={
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"}
+                              "TableName": { "Ref" : "UserTabel"},
+                              "USERPOOLID": { "Ref" : "AuthUserPools"}
                             }
                           }
                         ]
@@ -380,7 +406,8 @@ export let AppType={
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"}
+                              "TableName": { "Ref" : "UserTabel"},
+                              "USERPOOLID": { "Ref" : "AuthUserPools"}
                             }
                           }
                         ]
@@ -401,7 +428,8 @@ export let AppType={
                           "AWSLambdaDynamoDBExecutionRole",
                           {
                             "DynamoDBCrudPolicy": {
-                              "TableName": { "Ref" : "UserTabel"}
+                              "TableName": { "Ref" : "UserTabel"},
+                              "USERPOOLID": { "Ref" : "AuthUserPools"}
                             }
                           }
                         ]
@@ -612,6 +640,7 @@ export let AppType={
                     "name":"EmailAuthAPIs",
                     "type":"apigateway",
                     "config":{
+                      "StageName":"dev",
                         "objects":[
                         {
                           "name":"SignUpFunctions",
@@ -660,12 +689,89 @@ export let AppType={
                           "role":"SignUpRoles",
                           "path":"/forgotpassword",
                           "resourcetype":"lambda"
+                        },
+                        {
+                          "name":"Users",
+                          "methods":["get","put","delete"],
+                          "resource":"ForgotPassword",
+                          "role":"SignUpRoles",
+                          "path":"/users",
+                          "resourcetype":"lambda"
                         }
-                        ]
+                        ],
+                        "security":{
+                          api_key:{
+                            "apikeyName":"user_apikey",
+                            "type":"apiKey",
+                            "name": "x-api-key",
+                            "in": "header",
+                        },
+                          authorizer:{
+                            "authorizerName":"user_authorizer",
+                            "type":"oauth2",
+                            "x-amazon-apigateway-authorizer": {
+                              "type": "jwt",
+                              "jwtConfiguration": {
+                                 "issuer": "https://cognito-idp.region.amazonaws.com/UserPoolId",
+                                 "audience": [
+                                   "audience1",
+                                   "audience2"
+                                 ]
+                               },
+                               "identitySource": "$request.header.Authorization"
+                          }}
+                        }
                        
                       },
                     "logic":false
                   },
+                  {
+                      "name":"ClientApiKey",
+                      "type":"apikey",
+                      "config": {
+                        "DependsOn":["EmailAuthAPIs","EmailAuthAPIsdevStage"],
+                        "Enabled": true,
+                        "StageKeys": [
+                          {
+                            "RestApiId": {"Ref":  "EmailAuthAPIs"},
+                            "StageName": "dev"
+                          },
+                        ],
+                        
+                      }
+                    
+                  },
+                  {
+                      "name":"ClientOrderUsagePlan",
+                      "type": "usageplan",
+                      "config": {
+                        "DependsOn":["ClientApiKey"],
+                        "ApiStages": [
+                          {
+                            "ApiId": {"Ref" :"EmailAuthAPIs"},
+                            "Stage": "dev"
+                          }
+                        ],
+                        "Description": "Client Orders's usage plan",
+                        "Throttle": {
+                          "BurstLimit": 5,
+                          "RateLimit": 5
+                        }
+                      }
+                    
+                  },
+                  {
+                    "name":"ClientOrderUsagePlanKey",
+                    "type": "usageplankey",
+                    "config": {
+                      "DependsOn":["ClientOrderUsagePlan"],
+                      "KeyId": {"Ref" :"ClientApiKey"},
+                      "KeyType": "API_KEY",
+                      "UsagePlanId": {"Ref" :"ClientOrderUsagePlan"}
+                    }
+                  
+                }
+                  
               ]
           
           }

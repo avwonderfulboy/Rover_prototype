@@ -1,4 +1,5 @@
 import { Console } from "console";
+import { AnyArray, AnyObject } from "immer/dist/internal";
 import * as configs  from "./config.js"
 import * as utilities from "./utilities"
 const yaml = require("yaml");
@@ -14,7 +15,7 @@ export  function skeleton(){
     return template_skeleton
 }
 function rolePolicyAddition(template,config){
-    let policies=[]
+    var policies:AnyArray=[]
     let base =template["Properties"]["ManagedPolicyArns"][0]
     for (var j in  config["managedarn"]){
         template["Properties"]["ManagedPolicyArns"][j]=base+config["managedarn"][j]
@@ -27,7 +28,7 @@ function rolePolicyAddition(template,config){
     
     //console.log("config",JSON.stringify(template["Properties"]["ManagedPolicyArns"]))
     for (let k in config["Policies"]){
-        let role=JSON.parse(JSON.stringify(configs.PolicySkeleton))
+        let role:AnyObject=JSON.parse(JSON.stringify(configs.PolicySkeleton))
         role["PolicyName"]=config["Policies"][k]["name"]
         role["PolicyDocument"]["Statement"][0]["Action"]=config["Policies"][k]["Action"]
         role["PolicyDocument"]["Statement"][0]["Resource"]=config["Policies"][k]["Resource"]
@@ -50,11 +51,30 @@ function policyAddition(template,config){
 
 function swaggerGenerator(config){
 
-    const swagger=configs.SwaggerSkeleton
+    const swagger=JSON.parse(JSON.stringify(configs.SwaggerSkeleton))
     let swaggerPaths = {}
+    if(config.hasOwnProperty("security")){
+        let securities=Object.keys(JSON.parse(JSON.stringify(config["security"])))
+       
+        swagger["securityDefinitions"]=JSON.parse(JSON.stringify(config["security"]))
+    }
+    let security:AnyArray=[]
+   
+    if (config["security"]!==undefined&&Object.keys(config.security).length>0){
+        if(config.security.hasOwnProperty("api_key")){
+            let apikey:AnyObject={}
+            apikey[JSON.parse(JSON.stringify(config.security.api_key.apikeyName))]=[]
+            security.push(apikey)
+        }
+        if(config.security.hasOwnProperty("authorizer")){
+            let authorizer:AnyObject={}
+            authorizer[JSON.parse(JSON.stringify(config.security.authorizer.authorizerName))]=[]
+            security.push(authorizer)
+        }
+    }
     config.objects.map((data,i) => {
         const pathName = data["path"]
-        swaggerPaths[pathName] = attachMethods(data["methods"],data)
+        swaggerPaths[pathName] = attachMethods(data["methods"],data,security)
         return null
     })
 
@@ -64,7 +84,7 @@ function swaggerGenerator(config){
     utilities.writeFile(config["filepath"],doc.toString())
 }
 
-const attachMethods = (methodArray,data) => {
+const attachMethods = (methodArray,data,security) => {
     
     let result = {}
     if(methodArray.length) {
@@ -73,6 +93,10 @@ const attachMethods = (methodArray,data) => {
             let uri=result[item]["x-amazon-apigateway-integration"]["uri"]["Fn::Sub"]+configs.APIGatewayURI[data["resourcetype"]]
             if (data["resourcetype"]=="lambda"){
                 uri=uri.replace("lambda.Arn",data["resource"]+".Arn")
+            }
+            
+            if (security!==undefined&&Object.keys(security).length>0){
+                result[item]["security"]=JSON.parse(JSON.stringify(security))
             }
             result[item]["x-amazon-apigateway-integration"]["uri"]["Fn::Sub"]=uri
             result[item]["x-amazon-apigateway-integration"]["credentials"]={}
@@ -96,20 +120,30 @@ export let resourceGeneration=function(resource_name,config){
         
         if (resource_properties.attributes[j]=="Type"){
             template[resource_properties.attributes[j]]=JSON.parse(JSON.stringify(configs.AWSResourcesTypes[resource_name]))
+        }else if (resource_properties.attributes[j]=="DependsOn"){
+            if(config["DependsOn"]!==undefined)template[resource_properties.attributes[j]]=JSON.parse(JSON.stringify(config["DependsOn"]))
         }else{
             template[resource_properties.attributes[j]]={}
-            for (let k in resource_properties.Properties.Base){
-                template[resource_properties.attributes[j]][resource_properties.Properties.Base[k]]=config[resource_properties.Properties.Base[k]]
-            }
-            for (let l in resource_properties.Properties.Optional){
-                if (config[resource_properties.Properties.Optional[l]]!==undefined){
-                   
-                    template[resource_properties.attributes[j]][resource_properties.Properties.Optional[l]]=config[resource_properties.Properties.Optional[l]]
+
+            if(resource_properties.Properties.Base.length>0){
+                for (let k in resource_properties.Properties.Base){
+                    template[resource_properties.attributes[j]][resource_properties.Properties.Base[k]]=config[resource_properties.Properties.Base[k]]
                 }
             }
-            for (let m in resource_properties.Properties.Default){
-                template[resource_properties.attributes[j]][resource_properties.Properties.Default[m]["Key"]]=resource_properties.Properties.Default[m]["Value"]
+            
+            if(resource_properties.Properties.Optional.length>0){
+                for (let l in resource_properties.Properties.Optional){
+                    if (config[resource_properties.Properties.Optional[l]]!==undefined){
+                    
+                        template[resource_properties.attributes[j]][resource_properties.Properties.Optional[l]]=config[resource_properties.Properties.Optional[l]]
+                    }
+                }
             }
+            
+                for (let m in resource_properties.Properties.Default){
+                    template[resource_properties.attributes[j]][resource_properties.Properties.Default[m]["Key"]]=resource_properties.Properties.Default[m]["Value"]
+                }
+            
         }
     }
     if(resource_name=="iamrole"){
