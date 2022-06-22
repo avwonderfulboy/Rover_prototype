@@ -9,7 +9,34 @@ let input={
     "language":"node",
     "AppType":"email_auth_app",
     "moduleconfig":{},
-    "repotype":"public"
+    "repotype":"public",
+    "repoconfig": {
+        "name":"SAM",
+        "tool":"git",
+        "language":"js",
+        "framework":"sam",
+        "no_envs":1,
+        "accesskey":"AKIA57GLKGCHUY3HMT56",
+        "secretkey":"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",
+        "envs":["dev"],
+        "steps":{
+            "dev":["build","deploy"]
+        },
+        "stackname":{
+            "dev":"",
+        },
+        "deploymentbucket":{
+            "dev":"",
+            
+        },
+        "deploymentregion":
+        {
+            "dev":"ap-south-1"
+        },
+        "deploymentparameters":{ "dev":{}},
+        "deployment_event":["push"]
+    
+    }
 }
 function  samGeneration(input){
     let app_name=input.app_name
@@ -32,7 +59,9 @@ function  samGeneration(input){
 
 try{
     samGeneration(input)
-    deployment.setupRepo(input.app_name,input.repotype)
+    let repoconfig=JSON.stringify(input.repoconfig)
+    //console.log(repoconfig)
+    deployment.setupRepo(input.app_name,input.repotype,repoconfig)
     }catch(err){
         console.log("ERROR!:",err)
     }
