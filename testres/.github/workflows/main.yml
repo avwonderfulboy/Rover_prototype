@@ -1,0 +1,25 @@
+jobs:
+  dev:
+    environment: dev
+    runs-on: ubuntu-latest
+    steps:
+    - name: Git clone the repository
+      uses: actions/checkout@v1
+    - name: Configure aws credentials
+      uses: aws-actions/configure-aws-credentials@master
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-region: ${{ secrets.AWS_REGION }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    - name: build deployment file
+      run: sam build --use-container
+    - name: Deploy stack
+      run: 'sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name
+        dev-stack --resolve-s3 --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM
+        CAPABILITY_AUTO_EXPAND --region ap-south-1  '
+name: SAM
+'on':
+- push
