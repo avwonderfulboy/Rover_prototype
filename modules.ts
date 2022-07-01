@@ -1,9 +1,9 @@
 import * as config  from "./config.js"
-export let AppType={
+export let StackType={
   
     "base_app":{
-        "stack_resources":{
-            "stack1":{
+       
+            "l1":{
                 "resources":[
                     {
                         "name":"lam1",
@@ -21,7 +21,7 @@ export let AppType={
                     }
                 ],
             },
-            "stack2":{
+            "l2":{
                 "resources":[
                     {
                         "name":"lam3",
@@ -39,7 +39,7 @@ export let AppType={
                     }
             ],
             }
-        }
+        
     },
     "base_app2":{
       "stack_resources":{
@@ -226,8 +226,7 @@ export let AppType={
         }
     },
     "email_auth_app":{
-      "stack_resources":{
-          "emailAuth":{
+          "email_auth_app":{
               "resources":[
                   {
                       "name":"DefineAuthChallenge",
@@ -812,7 +811,7 @@ export let AppType={
               ]
           
           }
-      }
+      
   }
 }
 

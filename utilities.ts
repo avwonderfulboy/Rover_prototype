@@ -2,7 +2,9 @@ import * as config  from "./config.js"
 import * as rover_resources  from "./resources.js"
 import * as logics  from "./logics.js"
 import * as modules  from "./modules.js"
+import * as components  from "./components.js"
 import { json } from "node:stream/consumers";
+import { AnyArray, AnyObject } from "immer/dist/internal";
 const exec = require("child_process").execSync;
 const yaml = require("yaml");
 var fs = require("fs");
@@ -41,15 +43,32 @@ export  function stackCreation(input){
     let dependency=config.LanguageSupport[input.language]["dependency"]
     let extension=config.LanguageSupport[input.language]["extension"]
     exec(config.SAMInitBase+config.SAMLanguage+language+config.SAMDependency+dependency+config.SAMAppName+app_name+config.SAMAppTemplate)
-    let app_types
-    if(input["AppType"]==="customizable"){
-        app_types=input["moduleconfig"]
-    }else{
-        app_types=modules.AppType[input["AppType"]]
+    let app_types:AnyObject={}
+    if( Object.keys(input["Stacks"]).length>0){
+        Object.keys(input["Stacks"]).map(ele =>{
+            let stackdata:AnyObject=JSON.parse(JSON.stringify(modules.StackType[input["Stacks"][ele]]))
+            Object.keys(stackdata).map(ele1=>{
+                app_types[ele+"_"+ele1]=stackdata[ele1]
+                app_types[ele+"_"+ele1]["type"]="module"
+            })
+        })
     }
-    let stack_names = Object.keys(app_types["stack_resources"])
-    let resource=app_types["stack_resources"]
-    let AppType = input["AppType"]
+    if( Object.keys(input["CustomStacks"]).length>0){
+        Object.keys(input["CustomStacks"]).map(ele =>{
+            let resources:AnyArray=[]
+            input["CustomStacks"][ele].map(ele=>{
+                    resources.push(JSON.parse(JSON.stringify(components.Components[ele])))
+                }
+            )
+            app_types[ele]={}
+            app_types[ele]["resources"]=resources
+            app_types[ele]["type"]="components"
+        })
+    }
+    //console.log(JSON.stringify(app_types))
+    let stack_names = Object.keys(app_types)
+    let resource=app_types
+    let StackType = Object.values(input["Stacks"])
     exec("mv "+pwd+app_name+"/hello-world "+pwd+app_name+"/"+"lambda_demo")
     let stackes={}
     for( let i=0;i< stack_names.length;i++){ 
@@ -67,10 +86,16 @@ export  function stackCreation(input){
                 }
                 if(resources["resources"][j]["type"]=="lambda"){ 
                     exec("cp -r "+pwd+app_name+"/"+"lambda_demo"+"/ "+pwd+app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"/")
+                    let code
                     if(logic){
-                        let code =logics.LambdaLogics[language][AppType][resources["resources"][j]["name"]]
+                        if(resources["type"]=="components"){
+                            code =logics.LambdaLogics[language][resources["resources"][j]["name"]]
+                        }else{
+                            code =logics.LambdaLogics[language][StackType[i]+"_"+resources["resources"][j]["name"]]
+                        }
                         if (code!==undefined){
-                        writeFile(app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"/"+"app"+extension,logics.LambdaLogics[language][AppType][resources["resources"][j]["name"]])
+
+                        writeFile(app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"/"+"app"+extension,code)
                         }
                     } 
                     configs["CodeUri"]=resources["resources"][j]["name"]+"/"

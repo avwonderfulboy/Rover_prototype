@@ -1,13 +1,12 @@
 export let LambdaLogics={
     "nodejs14.x":{
-        "email_auth_app":{
             
-            "PreSignUp":`exports.lambdaHandler = async event => {
+            "email_auth_app_PreSignUp":`exports.lambdaHandler = async event => {
                 event.response.autoConfirmUser = false;
                 event.response.autoVerifyEmail = false;
                 return event;
             };`,
-            "DefineAuthChallenge":`exports.lambdaHandler = async event => {
+            "email_auth_app_DefineAuthChallenge":`exports.lambdaHandler = async event => {
                 if (event.request.session &&
                     event.request.session.length >= 3 &&
                     event.request.session.slice(-1)[0].challengeResult === false) {
@@ -30,7 +29,7 @@ export let LambdaLogics={
                 return event;
             };
             `,
-            "CreateAuthChallenge":`
+            "email_auth_app_CreateAuthChallenge":`
                 exports.lambdaHandler = async event => {
                 const connectionString = process.env.DB_CONNECTION_STRING
                 let password;
@@ -56,7 +55,7 @@ export let LambdaLogics={
                 return event;
             
             }`,
-            "VerifyAuthChallengeResponse":`const md5 = require('md5');
+            "email_auth_app_VerifyAuthChallengeResponse":`const md5 = require('md5');
             exports.lambdaHandler = async event => {
                 const expectedAnswer = event.request.privateChallengeParameters.password; 
                 if (md5(event.request.challengeAnswer) === expectedAnswer) {
@@ -66,7 +65,7 @@ export let LambdaLogics={
                 }
                 return event;
             };`,
-            "SignUpFunctions":`
+            "email_auth_app_SignUpFunctions":`
             let response;
                 const aws = require('aws-sdk');
                 const UserPoolID = process.env.UserPoolID
@@ -108,7 +107,7 @@ export let LambdaLogics={
 
                     return response
                 };`,
-            "ResendCode":`
+            "email_auth_app_ResendCode":`
             let response;
             const aws = require('aws-sdk');
             const UserPoolID = process.env.UserPoolID
@@ -145,7 +144,7 @@ export let LambdaLogics={
                 return response
             };
             `,
-            "ConfirmUser":`
+            "email_auth_app_ConfirmUser":`
             let response;
             const aws = require('aws-sdk');
             const dynamoDB = new aws.DynamoDB.DocumentClient();
@@ -224,7 +223,7 @@ export let LambdaLogics={
                 return response
             };
             `,
-            "ConfirmForgotPassword":`
+            "email_auth_app_ConfirmForgotPassword":`
             let response;
             const UserPoolID = process.env.UserPoolID
             const UserPoolClientID = process.env.UserPoolClientID
@@ -260,7 +259,7 @@ export let LambdaLogics={
                 return response
             };
             `,
-            "ForgotPassword":`
+            "email_auth_app_ForgotPassword":`
             let response;
             const UserPoolID = process.env.UserPoolID
             const UserPoolClientID = process.env.UserPoolClientID
@@ -294,7 +293,7 @@ export let LambdaLogics={
                 return response
             };
             `,
-            "AuthorizerFunction":`
+            "email_auth_app_AuthorizerFunction":`
             import jwt from 'jsonwebtoken';
 
             // By default, API Gateway authorizations are cached (TTL) for 300 seconds.
@@ -337,9 +336,32 @@ export let LambdaLogics={
                 console.log(error);
                 throw 'Unauthorized';
               }
-            };`
+            };`,
+            "s3_lambda":`exports.lambdaHandler = async event => {
+                if (event.request.session &&
+                    event.request.session.length >= 3 &&
+                    event.request.session.slice(-1)[0].challengeResult === false) {
+                    // The user provided a wrong answer 3 times; fail auth
+                    event.response.issueTokens = false;
+                    event.response.failAuthentication = true;
+                } else if (event.request.session &&
+                    event.request.session.length &&
+                    event.request.session.slice(-1)[0].challengeResult === true) {
+                    // The user provided the right answer; succeed auth
+                    event.response.issueTokens = true;
+                    event.response.failAuthentication = false;
+                } else {
+                    // The user did not provide a correct answer yet; present challenge
+                    event.response.issueTokens = false;
+                    event.response.failAuthentication = false;
+                    event.response.challengeName = 'CUSTOM_CHALLENGE';
+                }
+            
+                return event;
+            };
+            `,
 
         
-    }
+    
 }
 }
