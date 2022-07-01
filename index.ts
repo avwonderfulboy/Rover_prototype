@@ -5,8 +5,8 @@ import * as config  from "./config.js"
 let input={
     "app_name":"testres3",
     "language":"node",
-    "Stacks":{"emailAuth":"email_auth_app","emailAuth1":"base_app"},
-    "CustomStacks":{"custom1":["s3_lambda"],"custom2":["s3_lambda"]},
+    "Stacks":{"emailAuth":"EmailAuthApp","emailAuths":"base_app"},
+    "CustomStacks":{"customone":["s3_lambda"],"customtwo":["s3_lambda"]},
     "repoconfig": {
         "name":"SAM",
         "repotype":"public",
@@ -39,7 +39,7 @@ let input={
 let input1={
     "app_name":"landaurePOC",
     "language":"node",
-    "StackType":"email_auth_app",
+    "StackType":"EmailAuthApp",
     "moduleconfig":{},
     "repotype":"public",
     "repoconfig": {

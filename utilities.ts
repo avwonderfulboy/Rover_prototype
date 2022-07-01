@@ -13,6 +13,17 @@ let doc = new yaml.Document();
 export  function writeFile(path, data){ 
      fs.writeFileSync(pwd+"/"+path,data);
 }
+function randomGenerate(len) {
+        let length = len
+        const characters = 'abcdefghijklmnopqrstuvwxyz';
+        let result = ' ';
+        const charactersLength = characters.length;
+        for(let i = 0; i < length; i++) {
+            result += 
+            characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result
+    }
 export  function addResourceTemplate(resources, name){ 
     let template=rover_resources.skeleton()
         for(let  i in name){ 
@@ -48,8 +59,8 @@ export  function stackCreation(input){
         Object.keys(input["Stacks"]).map(ele =>{
             let stackdata:AnyObject=JSON.parse(JSON.stringify(modules.StackType[input["Stacks"][ele]]))
             Object.keys(stackdata).map(ele1=>{
-                app_types[ele+"_"+ele1]=stackdata[ele1]
-                app_types[ele+"_"+ele1]["type"]="module"
+                app_types[ele+ele1]=stackdata[ele1]
+                app_types[ele+ele1]["type"]="module"
             })
         })
     }
@@ -67,6 +78,10 @@ export  function stackCreation(input){
     }
     //console.log(JSON.stringify(app_types))
     let stack_names = Object.keys(app_types)
+    // stack_names=stack_names.map(ele=>{
+    //     return ele.replace(/[^a-z0-9]/gi, '');
+        
+    // })
     let resource=app_types
     let StackType = Object.values(input["Stacks"])
     exec("mv "+pwd+app_name+"/hello-world "+pwd+app_name+"/"+"lambda_demo")
@@ -82,7 +97,9 @@ export  function stackCreation(input){
                 let logic=resources["resources"][j]["logic"]
                 
                 if(config.AWSResources[resources["resources"][j]["type"]].hasOwnProperty("name")){
-                    configs[config.AWSResources[resources["resources"][j]["type"]]["name"]]=resources["resources"][j]["name"]
+                    let name=(resources["resources"][j]["name"]+randomGenerate(5)).replace(" ","")
+                    name=name.replace(/[^a-z0-9]/gi, '');
+                    configs[config.AWSResources[resources["resources"][j]["type"]]["name"]]=name
                 }
                 if(resources["resources"][j]["type"]=="lambda"){ 
                     exec("cp -r "+pwd+app_name+"/"+"lambda_demo"+"/ "+pwd+app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"/")
@@ -91,7 +108,7 @@ export  function stackCreation(input){
                         if(resources["type"]=="components"){
                             code =logics.LambdaLogics[language][resources["resources"][j]["name"]]
                         }else{
-                            code =logics.LambdaLogics[language][StackType[i]+"_"+resources["resources"][j]["name"]]
+                            code =logics.LambdaLogics[language][StackType[i]+resources["resources"][j]["name"]]
                         }
                         if (code!==undefined){
 

@@ -3,17 +3,17 @@ export let StackType={
   
     "base_app":{
        
-            "l1":{
+            "lone":{
                 "resources":[
                     {
-                        "name":"lam1",
+                        "name":"lamone",
                         "type":"lambda",
                         "config":{},
                         "policies":{},
                         "logic":false
                     },
                     {
-                        "name":"lam2",
+                        "name":"lamtwo",
                         "type":"lambda",
                         "config":{},
                         "policies":{},
@@ -21,17 +21,17 @@ export let StackType={
                     }
                 ],
             },
-            "l2":{
+            "ltwo":{
                 "resources":[
                     {
-                        "name":"lam3",
+                        "name":"lamthree",
                         "type":"lambda",
                         "config":{},
                         "policies":{},
                         "logic":false
                     },
                     {
-                        "name":"lam4",
+                        "name":"lamfour",
                         "type":"lambda",
                         "config":{},
                         "policies":{},
@@ -225,8 +225,8 @@ export let StackType={
             }
         }
     },
-    "email_auth_app":{
-          "email_auth_app":{
+    "EmailAuthApp":{
+          "EmailAuthApp":{
               "resources":[
                   {
                       "name":"DefineAuthChallenge",
