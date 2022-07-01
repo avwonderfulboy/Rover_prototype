@@ -2,8 +2,6 @@ import * as config  from "./config.js"
 export let AppType={
   
     "base_app":{
-        "no_of_stack":2,
-        "stack_names":["stack1","stack2"],
         "stack_resources":{
             "stack1":{
                 "resources":[
@@ -43,6 +41,22 @@ export let AppType={
             }
         }
     },
+    "base_app2":{
+      "stack_resources":{
+          "landauerStack":{
+              "resources":[
+                  {
+                      "name":"ESDumpDataFunction",
+                      "type":"lambda",
+                      "config":{},
+                      "policies":{},
+                      "logic":false
+                  },
+                  
+              ],
+          }
+      }
+  },
     "test_app":{
         "no_of_stack":1,
         "stack_names":["test"],
@@ -212,8 +226,6 @@ export let AppType={
         }
     },
     "email_auth_app":{
-      "no_of_stack":1,
-      "stack_names":["emailAuth"],
       "stack_resources":{
           "emailAuth":{
               "resources":[
@@ -333,7 +345,9 @@ export let AppType={
                         "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
                         "Environment": {
                             "Variables": {
-                            "userinfoTable": { "Ref" : "UserTabel"}
+                              "UserPoolID": { "Ref" : "AuthUserPools"},
+                              "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
+                              "userinfoTable": { "Ref" : "UserTabel"}
                             }
                         },
                         "Policies": [
@@ -355,6 +369,8 @@ export let AppType={
                         "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
                         "Environment": {
                             "Variables": {
+                              "UserPoolID": { "Ref" : "AuthUserPools"},
+                              "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
                             "userinfoTable": { "Ref" : "UserTabel"}
                             }
                         },
@@ -363,7 +379,8 @@ export let AppType={
                           {
                             "DynamoDBCrudPolicy": {
                               "TableName": { "Ref" : "UserTabel"},
-                              "USERPOOLID": { "Ref" : "AuthUserPools"}
+                              "UserPoolID": { "Ref" : "AuthUserPools"},
+                              "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"}
                             }
                           }
                         ]
@@ -377,6 +394,8 @@ export let AppType={
                         "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
                         "Environment": {
                             "Variables": {
+                              "UserPoolID": { "Ref" : "AuthUserPools"},
+                              "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
                             "userinfoTable": { "Ref" : "UserTabel"}
                             }
                         },
@@ -399,6 +418,8 @@ export let AppType={
                         "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
                         "Environment": {
                             "Variables": {
+                              "UserPoolID": { "Ref" : "AuthUserPools"},
+                              "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
                             "userinfoTable": { "Ref" : "UserTabel"}
                             }
                         },
@@ -421,7 +442,9 @@ export let AppType={
                         "Role":  {"Fn::GetAtt": [ "SignUpRoles","Arn"]},
                         "Environment": {
                             "Variables": {
-                            "userinfoTable": { "Ref" : "UserTabel"}
+                              "UserPoolID": { "Ref" : "AuthUserPools"},
+                              "UserPoolClientID": { "Ref" : "AuthUserPoolsClient"},
+                              "userinfoTable": { "Ref" : "UserTabel"}
                             }
                         },
                         "Policies": [
@@ -429,7 +452,7 @@ export let AppType={
                           {
                             "DynamoDBCrudPolicy": {
                               "TableName": { "Ref" : "UserTabel"},
-                              "USERPOOLID": { "Ref" : "AuthUserPools"}
+                              
                             }
                           }
                         ]

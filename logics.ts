@@ -69,7 +69,8 @@ export let LambdaLogics={
             "SignUpFunctions":`
             let response;
                 const aws = require('aws-sdk');
-
+                const UserPoolID = process.env.UserPoolID
+                const UserPoolClientID = process.env.UserPoolClientID
                 exports.lambdaHandler = async (event, context) => {
                     try {
                         if(event.body!==undefined){
@@ -78,7 +79,7 @@ export let LambdaLogics={
                         // const ret = await axios(url);
                         const cognito = new aws.CognitoIdentityServiceProvider();
                         const params = {
-                            ClientId: "3p6cqj50cvn3596p44c8ck1s1e",
+                            ClientId: UserPoolID,
                             Username:event.emailId,
                             Password: event.Password,
                             UserAttributes:[
@@ -110,6 +111,8 @@ export let LambdaLogics={
             "ResendCode":`
             let response;
             const aws = require('aws-sdk');
+            const UserPoolID = process.env.UserPoolID
+            const UserPoolClientID = process.env.UserPoolClientID
             exports.lambdaHandler = async (event, context) => {
                 try {
                     if(event.body!==undefined){
@@ -118,7 +121,7 @@ export let LambdaLogics={
                     const cognito = new aws.CognitoIdentityServiceProvider();
                     
                     var params = {
-                                    ClientId: "3p6cqj50cvn3596p44c8ck1s1e",
+                                    ClientId: UserPoolID,
                                     Username: event.emailId
               }
               let res=await cognito.resendConfirmationCode(params).promise();
@@ -147,7 +150,8 @@ export let LambdaLogics={
             const aws = require('aws-sdk');
             const dynamoDB = new aws.DynamoDB.DocumentClient();
             const UserTable = process.env.userinfoTable
-            
+            const UserPoolID = process.env.UserPoolID
+            const UserPoolClientID = process.env.UserPoolClientID
             async function addUserData(userData) {
                 try {
                         console.log("[INFO] addUserData input",userData)
@@ -172,7 +176,7 @@ export let LambdaLogics={
                     }
                     const cognito = new aws.CognitoIdentityServiceProvider();
                     var params = {
-                                    ClientId: "3p6cqj50cvn3596p44c8ck1s1e",
+                                    ClientId: UserPoolID,
                                     ConfirmationCode: event.Code,
                                     Username: event.emailId
               }
@@ -222,6 +226,8 @@ export let LambdaLogics={
             `,
             "ConfirmForgotPassword":`
             let response;
+            const UserPoolID = process.env.UserPoolID
+            const UserPoolClientID = process.env.UserPoolClientID
             const aws = require('aws-sdk');
             exports.lambdaHandler = async (event, context) => {
                 try {
@@ -230,7 +236,7 @@ export let LambdaLogics={
                     }
                     const cognito = new aws.CognitoIdentityServiceProvider();
                     var params = {
-                                    ClientId: "3p6cqj50cvn3596p44c8ck1s1e",
+                                    ClientId: UserPoolID,
                                     ConfirmationCode: event.Code,
                                     Username: event.emailId,
                                     Password:  event.password, /* required */
@@ -256,6 +262,8 @@ export let LambdaLogics={
             `,
             "ForgotPassword":`
             let response;
+            const UserPoolID = process.env.UserPoolID
+            const UserPoolClientID = process.env.UserPoolClientID
             const aws = require('aws-sdk');
             exports.lambdaHandler = async (event, context) => {
                 try {
@@ -264,7 +272,7 @@ export let LambdaLogics={
                     }
                     const cognito = new aws.CognitoIdentityServiceProvider();
                     var params = {
-                                    ClientId: "3p6cqj50cvn3596p44c8ck1s1e",
+                                    ClientId: UserPoolID,
                                     Username: event.emailId
                                 }
               let res=await cognito.forgotPassword(params).promise();

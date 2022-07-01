@@ -190,6 +190,8 @@ export let AWSResourcesTypes={
     "apiauthorizer":"AWS::ApiGateway::Authorizer"
   
 }
+
+
 export let AWSResources={
     "stack":{
         "attributes":["Type","Properties","DependsOn"],
@@ -200,6 +202,7 @@ export let AWSResources={
         
     },
     "lambda":{
+        "name":"FunctionName",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["FunctionName","CodeUri","Runtime"],
@@ -213,6 +216,7 @@ export let AWSResources={
         }
     },
     "dynamoDB":{
+            "name":"TableName",
             "attributes":["Type","Properties","DependsOn"],
             "Properties":{
                 "Base":["TableName","KeySchema"],
@@ -234,6 +238,7 @@ export let AWSResources={
 
     },
     "cognitoUserPool":{
+        "name":"UserPoolName",
             "attributes":["Type","Properties","DependsOn"],
             "Properties":{
                 "Base":["UserPoolName"],
@@ -263,6 +268,7 @@ export let AWSResources={
 
     },
     "userPoolClient":{
+        "name":"ClientName",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["UserPoolId"],
@@ -289,6 +295,7 @@ export let AWSResources={
         }
     },
     "lambdaPermission":{
+        "name":"Name",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["FunctionName","Principal"],
@@ -305,6 +312,7 @@ export let AWSResources={
         }
     },
     "iamrole":{
+        "name":"RoleName",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["AssumeRolePolicyDocument"],
@@ -330,6 +338,7 @@ export let AWSResources={
         }
     },
     "iampolicy":{
+        "name":"PolicyName",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["PolicyName"],
@@ -343,6 +352,7 @@ export let AWSResources={
         }
     },
     "apigateway":{
+        "name":"Name",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":[ "Name"],
@@ -376,6 +386,7 @@ export let AWSResources={
         }
     },
     "stepfunction":{
+        "name":"Name",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":[ "Definition", "DefinitionUri"],
@@ -397,6 +408,7 @@ export let AWSResources={
         }
     },
     "s3bucket":{
+        "name":"BucketName",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":[ "BucketName"],
@@ -425,6 +437,7 @@ export let AWSResources={
         }
     },
     "apikey":{
+        "name":"Name",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":[ "Name"],
@@ -441,6 +454,7 @@ export let AWSResources={
         }
     },
     "usageplan":{
+        "name":"UsagePlanName",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":[ "UsagePlanName"],
@@ -463,6 +477,7 @@ export let AWSResources={
         }
     },
     "apiauthorizer":{ 
+        "name":"Name",
         "attributes":["Type","Properties","DependsOn"],
         "Properties":{
             "Base":["Name" ,"RestApiId" ,"Type" ],
