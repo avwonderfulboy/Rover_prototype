@@ -1,4 +1,4 @@
-import * as config  from "./config.js"
+import * as config  from "../utlities/config.js"
 export let Components={
     "s3_lambda":{
         "name":"lambdas",

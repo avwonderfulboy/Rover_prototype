@@ -17,8 +17,6 @@ def pipelinegenerator(inputs):
     else:
         return "wrong deployment tool"
 
-
-
 file1=open(sys.argv[1], 'w')
 file2=open(sys.argv[2], 'w')
 file3=open(sys.argv[3], 'w')

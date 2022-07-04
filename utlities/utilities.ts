@@ -1,8 +1,8 @@
 import * as config  from "./config.js"
-import * as rover_resources  from "./resources.js"
-import * as logics  from "./logics.js"
-import * as modules  from "./modules.js"
-import * as components  from "./components.js"
+import * as rover_resources  from "../resources/resources.js"
+import * as logics  from "../resources/logics.js"
+import * as modules  from "../resources/modules.js"
+import * as components  from "../resources/components.js"
 import { json } from "node:stream/consumers";
 import { AnyArray, AnyObject } from "immer/dist/internal";
 const exec = require("child_process").execSync;
@@ -13,17 +13,6 @@ let doc = new yaml.Document();
 export  function writeFile(path, data){ 
      fs.writeFileSync(pwd+"/"+path,data);
 }
-function randomGenerate(len) {
-        let length = len
-        const characters = 'abcdefghijklmnopqrstuvwxyz';
-        let result = ' ';
-        const charactersLength = characters.length;
-        for(let i = 0; i < length; i++) {
-            result += 
-            characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result
-    }
 export  function addResourceTemplate(resources, name){ 
     let template=rover_resources.skeleton()
         for(let  i in name){ 
@@ -76,12 +65,7 @@ export  function stackCreation(input){
             app_types[ele]["type"]="components"
         })
     }
-    //console.log(JSON.stringify(app_types))
     let stack_names = Object.keys(app_types)
-    // stack_names=stack_names.map(ele=>{
-    //     return ele.replace(/[^a-z0-9]/gi, '');
-        
-    // })
     let resource=app_types
     let StackType = Object.values(input["Stacks"])
     exec("mv "+pwd+app_name+"/hello-world "+pwd+app_name+"/"+"lambda_demo")
@@ -93,11 +77,13 @@ export  function stackCreation(input){
             let resources=resource[stack_names[i]] 
             let res={}
             for(let j in  resources["resources"]){ 
+                
                 let configs=resources["resources"][j]["config"]
                 let logic=resources["resources"][j]["logic"]
                 
                 if(config.AWSResources[resources["resources"][j]["type"]].hasOwnProperty("name")){
-                    let name=(resources["resources"][j]["name"]+randomGenerate(5)).replace(" ","")
+                    let name=(resources["resources"][j]["name"]).replace(" ","")
+                    
                     name=name.replace(/[^a-z0-9]/gi, '');
                     configs[config.AWSResources[resources["resources"][j]["type"]]["name"]]=name
                 }
@@ -106,7 +92,9 @@ export  function stackCreation(input){
                     let code
                     if(logic){
                         if(resources["type"]=="components"){
+                            
                             code =logics.LambdaLogics[language][resources["resources"][j]["name"]]
+                            
                         }else{
                             code =logics.LambdaLogics[language][StackType[i]+resources["resources"][j]["name"]]
                         }
@@ -123,6 +111,8 @@ export  function stackCreation(input){
                     configs["filepath"]=app_name+"/"+stack_names[i]+"_Stack"+"/"+resources["resources"][j]["name"]+"_apigateway"+"/swagger.yaml"
                 }
                 let resources1=rover_resources.resourceGeneration(resources["resources"][j]["type"],configs)
+                
+                
                 res[resources["resources"][j]["name"]] = resources1
             }
             let template1= addResourceTemplate(res,Object.keys(res))
