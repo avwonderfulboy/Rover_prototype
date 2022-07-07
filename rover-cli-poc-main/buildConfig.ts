@@ -1,6 +1,6 @@
 export let samConfig = {
     choices: {
-      tool: ["git", "gitLab", "SamBuild"],
+      tool: ["git", "gitLab", "sambuild"],
       language: ["js", "python"],
       framework: ["sam", "cdk"],
       deploymentregion: [
@@ -34,12 +34,19 @@ export let samConfig = {
       deployment:["push","pull","commit"]
     },
     samBuild: [
-      { key: "name", value: "string" },
-      { key: "app_name", value: "string" },
-      { key: "repoType", value: "choice" },
-      { key: "tool", value: "choice" },
-      { key: "language", value: "choice" },
-      { key: "framework", value: "choice" },
+    //   { key: "name", value: "string" },
+    //   { key: "app_name", value: "string" },
+    //   { key: "repoType", value: "choice" },
+    //   { key: "tool", value: "choice" },
+    //   { key: "language", value: "choice" },
+    //   { key: "framework", value: "choice" },
+
+    { key: "name", value: "string" ,message:"Name"},
+    { key: "app_name", value: "string",message:"App Name" },
+    { key: "repoType", value: "choice",message:"Repo Type" },
+    { key: "tools", value: "choice",message:"Tools" },
+    { key: "language", value: "choice",message:"Language" },
+    { key: "framework", value: "choice",message:"Frame Work" },
   
     ]
   }

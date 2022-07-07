@@ -51,21 +51,21 @@ async function run(argv) {
     let editedSam = await util.confirmation();
 
     if (editedSam === "create new SAM project") {
-      let app_name = await util.inputString("app_name");
+      let app_name = await util.inputString("app_name","App Name:");
       let language = await util.languageChoice();
-      let no_of_stack = await util.inputNumber("no_of_stack");
+      let no_of_stack = await util.inputNumber("no_of_stack","Stacks");
       let stack_names: any = {};
       let customStacks: any = {};
       for (let i = 1; i <= no_of_stack; i++) {
         let app_Types: any = [];
-        let AppType = await util.inputType("app_Type", "type");
-        if (AppType !== "customizable") {
-          let stack_name = await util.inputString(`stackName${i}`);
+        let AppType = await util.inputType("app_Type","type","App Type:");
+        if (AppType !== "Customizable") {
+          let stack_name = await util.inputString(`stackName${i}`,`Stack${i} Name: `);
   
           stack_names[stack_name[`stackName${i}`]] = AppType;
         } else {
           let choice = cliConfig.customizable.choice;
-          let customstack_name = await util.inputString(`customStackName${i}`);
+          let customstack_name = await util.inputString(`customStackName${i}`,`Stack${i} Name: `);
           let CustomStacks = await util.multichoice("app_type", choice);
           //name:customstack
           customStacks[customstack_name[`customStackName${i}`]] =

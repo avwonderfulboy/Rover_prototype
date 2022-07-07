@@ -12,7 +12,7 @@ export let multichoice = async function (name:string, choice:any) {
   let r = await inquirer.prompt([
     {
       type: "checkbox",
-      message: "Please select your options",
+      message: "Please select your components",
       name: name,
       choices: choice,
       validate(answer) {
@@ -97,11 +97,16 @@ export let confirmation = async function () {
   return r.choice;
 };
 
-export let inputNumber = async function (userName: string) {
+export let inputNumber = async function (userName: string,message:string) {
+  let displayname=userName
+  if (message!==undefined ){
+    displayname=message
+  }
   let takeInput = await inquirer.prompt([
+    
     {
       type: "number",
-      message: `Please enter the required number of ${userName} you want  ?`,
+      message: `Please enter the required number of ${displayname} you want  ?`,
       name: `${userName}`,
       validate: function (value) {
         if (isNaN(value)) {
@@ -174,7 +179,7 @@ export let inputCli = async function (
         res[`${subObj[i].key}`] = { ...temp };
       }
     } else if (subObj[i].value === "list") {
-      let r = await inputNumber(subObj[i].key);
+      let r = await inputNumber(subObj[i].key,subObj[i].key );
       let codeUriArr: any = [];
       for (let j = 0; j < r; j++) {
         let r = await inquirer.prompt([
@@ -200,7 +205,7 @@ export let inputCli = async function (
 
       res[`${subObj[i].key}`] = r;
     } else if (subObj[i].value === "objectList") {
-      let p = await inputNumber(subObj[i].key);
+      let p = await inputNumber(subObj[i].key,subObj[i].key);
       let objListArr: any = [];
       while (p-- !== 0) {
         let temp = await inputCli(obj, obj[subObj[i].key], subObj[i].key);
@@ -327,7 +332,7 @@ export let samBuild = async function () {
   let sam = await inputCli(obj, subObj, "");
   let accesskey = await password("accesskey");
   let secretkey = await password("secretkey")
-  let no_of_env = await inputNumber("no_of_env");
+  let no_of_env = await inputNumber("no_of_env","Environments(dev,test)");
   let envs: string[] = [];
   let steps: any = {};
   let stacknames: any = {};
