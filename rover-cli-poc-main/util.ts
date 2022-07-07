@@ -12,7 +12,7 @@ export let multichoice = async function (name:string, choice:any) {
   let r = await inquirer.prompt([
     {
       type: "checkbox",
-      message: "Please select your components",
+      message: "Please select your components :",
       name: name,
       choices: choice,
       validate(answer) {
@@ -154,18 +154,18 @@ export let inputCli = async function (
       res = { ...res, [subObj[i].key]: resp };
     } else if (subObj[i].value === "choice") {
       let choice = obj.choices[subObj[i].key];
-      let r = await inputType(subObj[i].key, choice);
+      let r = await inputType(subObj[i].key, choice,subObj[i].message);
       res[`${subObj[i].key}`] = r;
     } else if (subObj[i].value === "choiceOption") {
       let choice = obj.choiceOption[subObj[i].key];
-      let p = await inputType(subObj[i].key, choice);
+      let p = await inputType(subObj[i].key, choice,subObj[i].message);
 
       if (p === "String") {
         let r = await inquirer.prompt([
           {
             type: "input",
             message: `${choiceOption === "" ? "" : choiceOption + "->"}${
-              subObj[i].key
+              subObj[i].message
             }`,
             name: `${subObj[i].key}`,
           },
@@ -179,14 +179,14 @@ export let inputCli = async function (
         res[`${subObj[i].key}`] = { ...temp };
       }
     } else if (subObj[i].value === "list") {
-      let r = await inputNumber(subObj[i].key,subObj[i].key );
+      let r = await inputNumber(subObj[i].key,subObj[i].message );
       let codeUriArr: any = [];
       for (let j = 0; j < r; j++) {
         let r = await inquirer.prompt([
           {
             type: "input",
             message: `${choiceOption === "" ? "" : choiceOption + "->"}${
-              subObj[i].key
+              subObj[i].message
             }`,
             name: `${subObj[i].key}`,
           },
@@ -199,13 +199,13 @@ export let inputCli = async function (
         {
           type: "confirm",
           name: `${subObj[i].key}`,
-          message: `DO you want ${subObj[i].key} property  to be enabled`,
+          message: `DO you want ${subObj[i].message} property  to be enabled`,
         },
       ]);
 
       res[`${subObj[i].key}`] = r;
     } else if (subObj[i].value === "objectList") {
-      let p = await inputNumber(subObj[i].key,subObj[i].key);
+      let p = await inputNumber(subObj[i].key,subObj[i].message);
       let objListArr: any = [];
       while (p-- !== 0) {
         let temp = await inputCli(obj, obj[subObj[i].key], subObj[i].key);
@@ -217,7 +217,7 @@ export let inputCli = async function (
       if (subObj[i].key === "Action") {
         let choice = init.stackNames.map(({ key, value }) => value);
         choice = choice.filter((item, pos) => choice.indexOf(item) == pos);
-        let p = await inputType(subObj[i].key, choice);
+        let p = await inputType(subObj[i].key, choice,subObj[i].message);
         choice = obj.choices[p];
 
         let r = await multichoice(p, choice);
@@ -226,7 +226,7 @@ export let inputCli = async function (
         res = { Action: actionArr };
       } else {
         let choice = obj.choices[subObj[i].key];
-        let r = await multichoice(subObj[i].key, choice);
+        let r = await multichoice(subObj[i].key, choice,);
         res = { ...res, ...r };
       }
     } else if (subObj[i].value === "choiceReference") {
@@ -241,7 +241,7 @@ export let inputCli = async function (
           .filter(({ key, value }) => value === p)
           .map(({ key, value }) => key);
         let r = await inputType(p, choiceNames);
-        //"UserPoolId": { "Ref" : "AuthUserPools"}
+        
         res[`${subObj[i].key}`] = r;
       } else if (subObj[i].key === "role" && choice.indexOf("iamrole") !== -1) {
         let choiceNames = init.stackNames
@@ -249,22 +249,21 @@ export let inputCli = async function (
           .map(({ key, value }) => key);
         res[subObj[i].key] = choiceNames[0];
       } else {
-        let name = await inputString("name", `${subObj[i].key}-->name`);
-        let stack_names = await inputType("stack_resource", "resource");
-        // let r = await prompt_queries(stack_names);
+        let name = await inputString("name", `${subObj[i].message}-->Name`);
+        let stack_names = await inputType("stack_resource", "resource",subObj[i].message);
+        
         let temp = name;
 
         res[`${subObj[i].key}`] = temp.name;
 
        
 
-        // await init.optionalStack(r, temp["name"], stack_names);
-        // r = {};
+       
       }
     } else if (subObj[i].value === "choiceList") {
       let choice = obj.choices[subObj[i].key];
 
-      let p = await inputType(subObj[i].key, choice);
+      let p = await inputType(subObj[i].key, choice,subObj[i].message);
 
       let s = {};
 
@@ -289,7 +288,7 @@ export let inputCli = async function (
         {
           type: 'password',
           message: `${choiceOption === "" ? "" : choiceOption + "->"}${
-            subObj[i].key
+            subObj[i].message
           }`,
           name: `${subObj[i].key}`,
         },
@@ -301,15 +300,13 @@ export let inputCli = async function (
         {
           type: "input",
           message: `${choiceOption === "" ? "" : choiceOption + "->"}${
-            subObj[i].key
+            subObj[i].message
           }`,
           name: `${subObj[i].key}`,
         },
       ]);
       res = { ...res, ...r };
-      // if(subObj[i].key==='accesskey' || subObj[i].key==='secretkey'){
-        
-      //   accesskey = r[subObj[i].key];
+     
        
 
       
@@ -318,9 +315,10 @@ export let inputCli = async function (
   }
   return res;
 };
-export let password = async function(userName){
+export let password = async function(userName,message:string=""){
   let r = await inquirer.prompt([{
     type:'password',
+    message:message,
     name:userName,
   }])
   return r;
@@ -330,8 +328,8 @@ export let samBuild = async function () {
   let obj = buildConfig.samConfig;
   let subObj = buildConfig.samConfig.samBuild;
   let sam = await inputCli(obj, subObj, "");
-  let accesskey = await password("accesskey");
-  let secretkey = await password("secretkey")
+  let accesskey = await password("accesskey","Access Key");
+  let secretkey = await password("secretkey","Secret Key")
   let no_of_env = await inputNumber("no_of_env","Environments(dev,test)");
   let envs: string[] = [];
   let steps: any = {};
@@ -342,25 +340,24 @@ export let samBuild = async function () {
   let deployementbuckets: any = {};
   let depBucketNames: any = {};
   for (let i = 1; i <= no_of_env; i++) {
-    let env = await inputString(`env${i}`);
+    let env = await inputString(`env${i}`,`ENV ${i} :`);
     let envName = env[`env${i}`];
-    //console.log(JSON.stringify(env));
     envs.push(envName);
     let stepsChoice = buildConfig.samConfig.choices.dev;
     let step = await multichoice(`${envName}`, stepsChoice);
     let stackname = await inputString(
       `${envName}`,
-      `Stack name -->${envName} `
+      `Stack Name --> ${envName} :`
     );
     let deploymentbucket = await inputString(
       `${envName}`,
-      `Deployment Bucket -->${envName} `
+      `Deployment Bucket --> ${envName} :`
     );
     let regionChoice = buildConfig.samConfig.choices.deploymentregion;
-    let deployment_region = await inputType(`${envName}`, regionChoice);
+    let deployment_region = await inputType(`${envName}`, regionChoice,"Deployment Region");
     let deployment_parameter = await inputString(
       `${envName}`,
-      `parameter-->${envName}`
+      `Deployment Parameter--> ${envName} :`
     );
    
    
