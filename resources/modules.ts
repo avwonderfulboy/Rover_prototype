@@ -800,12 +800,11 @@ export let StackType={
   "Customizable":{}
 }
 
-export let ModuleDescription={
-  "BaseModule":"It's a module with 2 stacks and 2 lambdas in each stack ",
-  "TestModule":"Module with all AWS services supported by rover",
-  "EmailAuthModule":"Authentication module using Cognito",
-  "Customizable":"Create your own Module"
-
-}
+export let ModuleDescription=[
+  {key:"BaseModule",value:"Base Module : It's a module with 2 stacks and 2 lambdas in each stack "},
+  {key:"TestModule",value:"Test Module : Module with all AWS services supported by rover"},
+  {key:"EmailAuthModule",value:"Email Auth Module : Authentication module using Cognito"},
+  {key:"Customizable",value:"Customizable : Create your own Module"}
+]
 
     

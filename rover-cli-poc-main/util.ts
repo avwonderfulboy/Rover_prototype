@@ -4,11 +4,12 @@ import * as inquirer from "inquirer";
 import * as cliConfig from "./cliConfig";
 import * as buildConfig from "./buildConfig";
 import * as awsConfig from "./configaws";
+import * as Stack from "../resources/modules";;
 let config = {};
-export let s3Choice:any = [];
-export let accesskey:any,secretkey:any;
+export let s3Choice: any = [];
+export let accesskey: any, secretkey: any;
 
-export let multichoice = async function (name:string, choice:any) {
+export let multichoice = async function (name: string, choice: any) {
   let r = await inquirer.prompt([
     {
       type: "checkbox",
@@ -27,12 +28,12 @@ export let multichoice = async function (name:string, choice:any) {
   return r;
 };
 
-export let jsonCreation = async function (obj:any) {
+export let jsonCreation = async function (obj: any) {
   const fs = require("fs/promises");
 
   try {
     const content = JSON.stringify(obj, null, 2);
-    return content
+    return content;
   } catch (err) {
     console.log(err);
   }
@@ -47,42 +48,51 @@ export let inputString = async function (userName: string, message = "") {
     },
   ]);
 
- return ({...takeInput})
-
+  return { ...takeInput };
 };
 
 export let languageChoice = async function () {
-
   let lang = await inquirer.prompt([
     {
       type: "rawlist",
       name: "language",
-      message: "Choose your language",
+      message: "Choose your language :",
       choices: cliConfig.app.choices.language,
     },
   ]);
- 
 
   if (lang.language === "Node") {
-    return "node"
+    return "node";
   } else return "python";
 };
 
-export let inputType = async function (userName: string, choices:any,message="") {
+export let inputType = async function (
+  userName: string,
+  choices: any,
+  message = ""
+) {
   let takeInput = await inquirer.prompt([
     {
       type: "rawlist",
       name: `${userName}`,
-      message :message,
+      message: message,
       choices:
-        typeof choices === "string"
-          ? cliConfig.app.choices[choices]
-          : choices,
+        typeof choices === "string" ? cliConfig.app.choices[choices] : choices,
     },
   ]);
 
   return takeInput[`${userName}`];
 };
+
+export let moreStack = async function(){
+  let r = await inquirer.prompt([{
+    type:'list',
+    name:'stack',
+    message:"Do you want to add more?",
+    choices:["Yes","No"]
+  }])
+  return r['stack'];
+}
 
 export let confirmation = async function () {
   let r = await inquirer.prompt([
@@ -90,20 +100,23 @@ export let confirmation = async function () {
       type: "rawlist",
       name: "choice",
       message: `Hey, what do you want ?`,
-      choices: ["create new SAM project" , "add components to existing SAM" ,"add modules to existing SAM"],
+      choices: [
+        "create new SAM project",
+        "add components to existing SAM",
+        "add modules to existing SAM",
+      ],
     },
   ]);
 
   return r.choice;
 };
 
-export let inputNumber = async function (userName: string,message:string) {
-  let displayname=userName
-  if (message!==undefined ){
-    displayname=message
+export let inputNumber = async function (userName: string, message: string) {
+  let displayname = userName;
+  if (message !== undefined) {
+    displayname = message;
   }
   let takeInput = await inquirer.prompt([
-    
     {
       type: "number",
       message: `Please enter the required number of ${displayname} you want  ?`,
@@ -120,6 +133,23 @@ export let inputNumber = async function (userName: string,message:string) {
 
   return takeInput[`${userName}`];
 };
+
+export let appType = async function(message:string=""){
+  let r = await inquirer.prompt([{
+    type:'list',
+    name:"app_Type",
+    message:message,
+    choices:cliConfig.app.choices.type
+  }])
+  let stackModule = Stack.ModuleDescription;
+  for(let i=0;i<stackModule.length;i++){
+    if(stackModule[i].value===r["app_Type"]){
+       return stackModule[i].key;
+    ;}
+  }
+}
+   
+
 
 export let validates = function (
   value: any,
@@ -142,9 +172,9 @@ export let validates = function (
 };
 
 export let inputCli = async function (
-  obj:any,
-  subObj:any,
-  choiceOption:any,
+  obj: any,
+  subObj: any,
+  choiceOption: any,
   resource = ""
 ) {
   let res = {};
@@ -154,11 +184,11 @@ export let inputCli = async function (
       res = { ...res, [subObj[i].key]: resp };
     } else if (subObj[i].value === "choice") {
       let choice = obj.choices[subObj[i].key];
-      let r = await inputType(subObj[i].key, choice,subObj[i].message);
+      let r = await inputType(subObj[i].key, choice, subObj[i].message);
       res[`${subObj[i].key}`] = r;
     } else if (subObj[i].value === "choiceOption") {
       let choice = obj.choiceOption[subObj[i].key];
-      let p = await inputType(subObj[i].key, choice,subObj[i].message);
+      let p = await inputType(subObj[i].key, choice, subObj[i].message);
 
       if (p === "String") {
         let r = await inquirer.prompt([
@@ -179,7 +209,7 @@ export let inputCli = async function (
         res[`${subObj[i].key}`] = { ...temp };
       }
     } else if (subObj[i].value === "list") {
-      let r = await inputNumber(subObj[i].key,subObj[i].message );
+      let r = await inputNumber(subObj[i].key, subObj[i].message);
       let codeUriArr: any = [];
       for (let j = 0; j < r; j++) {
         let r = await inquirer.prompt([
@@ -205,7 +235,7 @@ export let inputCli = async function (
 
       res[`${subObj[i].key}`] = r;
     } else if (subObj[i].value === "objectList") {
-      let p = await inputNumber(subObj[i].key,subObj[i].message);
+      let p = await inputNumber(subObj[i].key, subObj[i].message);
       let objListArr: any = [];
       while (p-- !== 0) {
         let temp = await inputCli(obj, obj[subObj[i].key], subObj[i].key);
@@ -217,7 +247,7 @@ export let inputCli = async function (
       if (subObj[i].key === "Action") {
         let choice = init.stackNames.map(({ key, value }) => value);
         choice = choice.filter((item, pos) => choice.indexOf(item) == pos);
-        let p = await inputType(subObj[i].key, choice,subObj[i].message);
+        let p = await inputType(subObj[i].key, choice, subObj[i].message);
         choice = obj.choices[p];
 
         let r = await multichoice(p, choice);
@@ -226,7 +256,7 @@ export let inputCli = async function (
         res = { Action: actionArr };
       } else {
         let choice = obj.choices[subObj[i].key];
-        let r = await multichoice(subObj[i].key, choice,);
+        let r = await multichoice(subObj[i].key, choice);
         res = { ...res, ...r };
       }
     } else if (subObj[i].value === "choiceReference") {
@@ -241,7 +271,7 @@ export let inputCli = async function (
           .filter(({ key, value }) => value === p)
           .map(({ key, value }) => key);
         let r = await inputType(p, choiceNames);
-        
+
         res[`${subObj[i].key}`] = r;
       } else if (subObj[i].key === "role" && choice.indexOf("iamrole") !== -1) {
         let choiceNames = init.stackNames
@@ -250,20 +280,20 @@ export let inputCli = async function (
         res[subObj[i].key] = choiceNames[0];
       } else {
         let name = await inputString("name", `${subObj[i].message}-->Name`);
-        let stack_names = await inputType("stack_resource", "resource",subObj[i].message);
-        
+        let stack_names = await inputType(
+          "stack_resource",
+          "resource",
+          subObj[i].message
+        );
+
         let temp = name;
 
         res[`${subObj[i].key}`] = temp.name;
-
-       
-
-       
       }
     } else if (subObj[i].value === "choiceList") {
       let choice = obj.choices[subObj[i].key];
 
-      let p = await inputType(subObj[i].key, choice,subObj[i].message);
+      let p = await inputType(subObj[i].key, choice, subObj[i].message);
 
       let s = {};
 
@@ -283,10 +313,10 @@ export let inputCli = async function (
 
         res[`${subObj[i].key}`] = { ...temp };
       }
-    }else if(subObj[i].key==='accesskey' || subObj[i].key==='secretkey'){
+    } else if (subObj[i].key === "accesskey" || subObj[i].key === "secretkey") {
       let r = await inquirer.prompt([
         {
-          type: 'password',
+          type: "password",
           message: `${choiceOption === "" ? "" : choiceOption + "->"}${
             subObj[i].message
           }`,
@@ -295,7 +325,7 @@ export let inputCli = async function (
       ]);
       res = { ...res, ...r };
       accesskey = r[subObj[i].key];
-    } else {  
+    } else {
       let r = await inquirer.prompt([
         {
           type: "input",
@@ -306,31 +336,28 @@ export let inputCli = async function (
         },
       ]);
       res = { ...res, ...r };
-     
-       
-
-      
     }
-    
   }
   return res;
 };
-export let password = async function(userName,message:string=""){
-  let r = await inquirer.prompt([{
-    type:'password',
-    message:message,
-    name:userName,
-  }])
+export let password = async function (userName, message: string = "") {
+  let r = await inquirer.prompt([
+    {
+      type: "password",
+      message: message,
+      name: userName,
+    },
+  ]);
   return r;
-}
+};
 
 export let samBuild = async function () {
   let obj = buildConfig.samConfig;
   let subObj = buildConfig.samConfig.samBuild;
   let sam = await inputCli(obj, subObj, "");
-  let accesskey = await password("accesskey","Access Key");
-  let secretkey = await password("secretkey","Secret Key")
-  let no_of_env = await inputNumber("no_of_env","Environments(dev,test)");
+  let accesskey = await password("accesskey", "Access Key");
+  let secretkey = await password("secretkey", "Secret Key");
+  let no_of_env = await inputNumber("no_of_env", "Environments(dev,test)");
   let envs: string[] = [];
   let steps: any = {};
   let stacknames: any = {};
@@ -340,7 +367,7 @@ export let samBuild = async function () {
   let deployementbuckets: any = {};
   let depBucketNames: any = {};
   for (let i = 1; i <= no_of_env; i++) {
-    let env = await inputString(`env${i}`,`ENV ${i} :`);
+    let env = await inputString(`env${i}`, `ENV ${i} :`);
     let envName = env[`env${i}`];
     envs.push(envName);
     let stepsChoice = buildConfig.samConfig.choices.dev;
@@ -354,13 +381,15 @@ export let samBuild = async function () {
       `Deployment Bucket --> ${envName} :`
     );
     let regionChoice = buildConfig.samConfig.choices.deploymentregion;
-    let deployment_region = await inputType(`${envName}`, regionChoice,"Deployment Region");
+    let deployment_region = await inputType(
+      `${envName}`,
+      regionChoice,
+      "Deployment Region"
+    );
     let deployment_parameter = await inputString(
       `${envName}`,
       `Deployment Parameter--> ${envName} :`
     );
-   
-   
 
     steps = { ...steps, ...step };
     stacknames = { ...stacknames, ...stackname };
@@ -370,11 +399,13 @@ export let samBuild = async function () {
     };
     deploymentregion[`${envName}`] = deployment_region;
     deploymentparameters = { ...deploymentparameters, ...deployment_parameter };
-    
   }
-  let deployment_choice = buildConfig.samConfig.choices.deployment
-    let deploymentEvent = await multichoice(`deployment_event`,deployment_choice);
-    
+  let deployment_choice = buildConfig.samConfig.choices.deployment;
+  let deploymentEvent = await multichoice(
+    `deployment_event`,
+    deployment_choice
+  );
+
   let result: any = {};
   result = {
     ...sam,
@@ -386,7 +417,6 @@ export let samBuild = async function () {
     stackname: { ...stacknames },
     deploymentbucket: {
       ...depBucketNames,
-     
     },
     deploymentregion,
     deploymentparameters,
@@ -394,9 +424,6 @@ export let samBuild = async function () {
   };
 
   //console.log(JSON.stringify(result, null, 2));
- 
-  
+
   return result;
 };
-
-
