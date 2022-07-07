@@ -1,8 +1,8 @@
-import * as config  from "./config.js"
-import * as rover_resources  from "../resources/resources.js"
-import * as logics  from "../resources/logics.js"
-import * as modules  from "../resources/modules.js"
-import * as components  from "../resources/components.js"
+import * as config  from "./config"
+import * as rover_resources  from "../resources/resources"
+import * as logics  from "../resources/logics"
+import * as modules  from "../resources/modules"
+import * as components  from "../resources/components"
 import { json } from "node:stream/consumers";
 import { AnyArray, AnyObject } from "immer/dist/internal";
 const exec = require("child_process").execSync;
@@ -10,6 +10,8 @@ const yaml = require("yaml");
 var fs = require("fs");
 export let  pwd =process.cwd()+"/"
 let doc = new yaml.Document();
+export let npmroot=exec(" npm root -g").toString().trim()
+
 export  function writeFile(path, data){ 
      fs.writeFileSync(pwd+"/"+path,data);
 }
@@ -125,4 +127,9 @@ export  function stackCreation(input){
     let doc = new yaml.Document();
     doc.contents = template;
     writeFile(app_name+"/template.yaml",doc.toString())
+}
+export function  samGeneration(input){
+    
+    stackCreation(input)
+    exec(config.ForceRemove+input.app_name+config.LambdaDemo)
 }

@@ -1,7 +1,7 @@
 import { Console } from "console";
 import { AnyArray, AnyObject } from "immer/dist/internal";
-import * as configs  from "../utlities/config.js"
-import * as utilities from "../utlities/utilities.js"
+import * as configs  from "../utlities/config"
+import * as utilities from "../utlities/utilities"
 const yaml = require("yaml");
 
 

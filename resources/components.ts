@@ -1,4 +1,4 @@
-import * as config  from "../utlities/config.js"
+import * as config  from "../utlities/config"
 export let Components={
     "s3_lambda":{
         "name":"lambdas",
@@ -15,4 +15,9 @@ export let Components={
           },
         "logic":true
     },
+}
+
+export let ModuleDescription={
+  "s3_lambda":"lambda with S3 as trigger",
+ 
 }

@@ -1,7 +1,7 @@
-import * as config  from "../utlities/config.js"
+import * as config  from "../utlities/config"
 export let StackType={
   
-    "base_app":{
+    "BaseModule":{
        
             "lone":{
                 "resources":[
@@ -41,23 +41,7 @@ export let StackType={
             }
         
     },
-    "base_app2":{
-      "stack_resources":{
-          "landauerStack":{
-              "resources":[
-                  {
-                      "name":"ESDumpDataFunction",
-                      "type":"lambda",
-                      "config":{},
-                      "policies":{},
-                      "logic":false
-                  },
-                  
-              ],
-          }
-      }
-  },
-    "test_app":{
+    "TestModule":{
         "no_of_stack":1,
         "stack_names":["test"],
         "stack_resources":{
@@ -225,8 +209,8 @@ export let StackType={
             }
         }
     },
-    "EmailAuthApp":{
-          "EmailAuthApp":{
+    "EmailAuthModule":{
+          "EmailAuthModule":{
               "resources":[
                   {
                       "name":"DefineAuthChallenge",
@@ -812,7 +796,16 @@ export let StackType={
           
           }
       
-  }
+  },
+  "Customizable":{}
+}
+
+export let ModuleDescription={
+  "BaseModule":"It's a module with 2 stacks and 2 lambdas in each stack ",
+  "TestModule":"Module with all AWS services supported by rover",
+  "EmailAuthModule":"Authentication module using Cognito",
+  "Customizable":"Create your own Module"
+
 }
 
     
