@@ -4,6 +4,7 @@ import * as inquirer from "inquirer";
 import * as cliConfig from "./cliConfig";
 import * as buildConfig from "./buildConfig";
 import * as awsConfig from "./configaws";
+import * as Stack from "../resources/modules";;
 let config = {};
 export let s3Choice: any = [];
 export let accesskey: any, secretkey: any;
@@ -140,17 +141,15 @@ export let appType = async function(message:string=""){
     message:message,
     choices:cliConfig.app.choices.type
   }])
-      
-      if(r.app_Type==="Base Module : It's a module with 2 stacks and 2 lambdas in each stack "){
-        return "BaseModule"
-      }else if(r.app_Type==="Test Module : Module with all AWS services supported by rover"){
-        return "TestModule"
-      }else if(r.app_Type=== "Email AuthModule : Authentication module using Cognito"){
-        return "EmailAuthModule"
-      }else{
-        return "Customizable"
-      }
+  let stackModule = Stack.ModuleDescription;
+  for(let i=0;i<stackModule.length;i++){
+    if(stackModule[i].value===r["app_Type"]){
+       return stackModule[i].key;
+    ;}
+  }
 }
+   
+
 
 export let validates = function (
   value: any,

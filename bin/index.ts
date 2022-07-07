@@ -49,15 +49,14 @@ async function run(argv) {
     if (editedSam === "create new SAM project") {
       let app_name = await util.inputString("app_name", "App Name:");
       let language = await util.languageChoice();
-      // let no_of_stack = await util.inputNumber("no_of_stack", "Stacks");
       let stack_names: any = {};
       let customStacks: any = {};
       let moreStack:any;
-      // for (let i = 1; i <= no_of_stack; i+++) 
+      let i = 1; 
       do{
-        let i = 1;
+        
         let app_Types: any = [];
-        let AppType = await util.appType("Type :");
+        let AppType:any = await util.appType("Type :");
         if (AppType !== "Customizable") {
           let stack_name = await util.inputString(
             `stackName${i}`,
@@ -72,7 +71,6 @@ async function run(argv) {
             `Stack ${i} Name: `
           );
           let CustomStacks = await util.multichoice("app_type", choice);
-          //name:customstack
           customStacks[customstack_name[`customStackName${i}`]] =
             CustomStacks.app_type;
         }
@@ -85,12 +83,6 @@ async function run(argv) {
           template = { ...template, CustomStacks: customStacks };
           console.log({template});
       };
-      // template = { ...app_name, language };
-      // if (stack_names !== null) template = { ...template, Stacks: stack_names };
-      // if (customStacks !== null)
-      //   template = { ...template, CustomStacks: customStacks };
-      //   console.log({template});
-      // rover_utilities.samGeneration(template);
     } else if (editedSam === "add components to existing SAM") {
       console.log("Work in progress...");
     } else if (editedSam === "add modules to existing SAM") {
@@ -103,14 +95,10 @@ async function run(argv) {
       let repoConfig = { ...pipeline };
       template = { ...template, repoConfig };
       let repoconfig = await Promise.resolve(util.jsonCreation(template));
-      //console.log(repoconfig)
-      // rover_utilities.samGeneration(input)
       if (repoconfig !== undefined) {
         await deployment.setupRepo(JSON.parse(repoconfig)["repoConfig"]);
       }
     } else {
-      // let repoconfig = util.jsonCreation(template);
-      //console.log("sh "+rover_utilities.npmroot+"/rover-prototype/utlities/exec.sh dgb  rovertest ")
       exec(
         "sh " +
           rover_utilities.npmroot +
