@@ -43,7 +43,6 @@ let AppType;
 let template = {};
 let config;
 async function run(argv) {
-  
   if (argv[0] === "init") {
     let editedSam = await util.confirmation();
     if (editedSam === "create new SAM project") {
@@ -80,7 +79,8 @@ async function run(argv) {
         template = { ...app_name, language };
         if (stack_names !== null) template = { ...template, Stacks: stack_names };
         if (customStacks !== null)
-          template = { ...template, CustomStacks: customStacks };
+        template = { ...template, CustomStacks: customStacks };
+        rover_utilities.samGeneration(({template})["template"]);
           console.log({template});
       };
     } else if (editedSam === "add components to existing SAM") {
